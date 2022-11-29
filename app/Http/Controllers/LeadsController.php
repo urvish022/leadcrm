@@ -49,8 +49,7 @@ class LeadsController extends AppBaseController
                         'created_by_id'=> auth()->id(),
                         'category_id'=> $request->category_id,
                         'company_name'=>$company_name,
-                        'company_origin'=>$country,
-                        'status'=>'lead'
+                        'company_origin'=>$country
                     ]);
 
                     if($leadData)
