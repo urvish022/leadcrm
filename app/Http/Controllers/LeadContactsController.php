@@ -39,14 +39,12 @@ class LeadContactsController extends AppBaseController
             ['data' => 'first_name', 'name' => 'first_name', 'title' => "Name"],
             ['data' => 'email', 'name' => 'email', 'title' => "Email"],
             ['data' => 'linkedin_profile', 'name' => 'linkedin_profile', 'title' => "Linkedin Profile"],
+            ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
         ];
 
         $builder_data['ajax'] = [
             'url'=> route('lead-contacts.list'),
-            'data' => 'function(d) {
-                d.search =  $("#contacts_search").val();
-            }',
             'length'=>50,
             'type'=>'POST'
         ];
@@ -57,7 +55,7 @@ class LeadContactsController extends AppBaseController
                             ->parameters([
                                 'processing' => false,
                                 'pageLength'=>100,
-                                'searching' => false,
+                                'searching' => true,
                             ]);
         
         return view('lead_contacts.index')
@@ -75,11 +73,11 @@ class LeadContactsController extends AppBaseController
         
         $leads = LeadContacts::whereHas('leads_detail');
         
-        $leads->when(request('search'), function ($q){
-            return $q->where('first_name', 'LIKE', '%' . request('search') . '%')
-            ->orWhere('last_name', 'LIKE', '%' . request('search') . '%')
-            ->orWhere('email', 'LIKE', '%' . request('search') . '%')
-            ->orWhere('linkedin_profile', 'LIKE', '%' . request('search') . '%');
+        $leads->when(request('search')['value'], function ($q){
+            return $q->where('first_name', 'LIKE', '%' . request('search')['value'] . '%')
+            ->orWhere('last_name', 'LIKE', '%' . request('search')['value'] . '%')
+            ->orWhere('email', 'LIKE', '%' . request('search')['value'] . '%')
+            ->orWhere('linkedin_profile', 'LIKE', '%' . request('search')['value'] . '%');
         });
 
         $leads->when(empty(request('order')[0]['column']), function($q){
@@ -99,6 +97,13 @@ class LeadContactsController extends AppBaseController
         ->editColumn('linkedin_profile', function($leads){
             return "<a href=".$leads->linkedin_profile." target='_blank')>".$leads->linkedin_profile."</a>";
         })
+        ->editColumn('status', function($leads){
+            if($leads->status){
+                return "<button type='button' onclick=updateStatus(".$leads->id.",'active') class='btn btn-success'>Active</button>";
+            } else {
+                return "<button type='button' onclick=updateStatus(".$leads->id.",'inactive') class='btn btn-warning'>Inactive</button>";
+            }
+        })
         ->addColumn('action', function($leads) {
             
             $str = "<a href=".route('lead-contacts.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
@@ -106,7 +111,7 @@ class LeadContactsController extends AppBaseController
             $str .= Form::open(['route' => ['lead-contacts.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
             return $str;
         })
-        ->rawColumns(['company_name','email','linkedin_profile','action'])
+        ->rawColumns(['company_name','email','linkedin_profile','status','action'])
         ->addIndexColumn()
         ->escapeColumns()
         ->toJSON();
@@ -229,5 +234,15 @@ class LeadContactsController extends AppBaseController
         Flash::success('Lead Contacts deleted successfully.');
 
         return redirect(route('lead-contacts.index'));
+    }
+
+    public function updateStatus($id)
+    {
+        $leadContacts = $this->leadContactsRepository->find($id);
+        $status = $leadContacts->status == 1 ? 0 : 1;
+
+        $this->leadContactsRepository->update(['status'=>$status],$id);
+
+        return response()->json(['status'=>true]);
     }
 }

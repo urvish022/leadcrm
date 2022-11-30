@@ -8,20 +8,22 @@
         outline: 0;
         cursor: pointer
     }
+    .popup{
+        position: fixed;
+    }
 </style>
 @endpush
 <div class="table-responsive-sm">
     {{$dt_html->table(['class'=>"table table-striped","width"=>"100%"],true)}}
 </div>
 
-<div class="modal fade bd-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade bd-example-modal-lg popup" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-    
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
         <h4 class="modal-title" id="exampleModalLabel">Mail Template</h4>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" onclick="closeMailBoxPopup()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
         </div>
@@ -55,14 +57,41 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-default" onclick="closeMailBoxPopup()">Close</button>
         </div>
       </div>
       
     </div>
 </div>
 
-<div class="modal fade bd-example-modal-lg" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade bd-example-modal-lg popup" id="bulkstatusModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title" id="exampleModalLabel">Change Status</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Select Status: </label>
+                <select class="form-control" name="bulk_status_select" id="bulk_status_select">
+                    @foreach (LeadsModel::getAllStatus() as $val)
+                        <option value="{{$val}}">{{ucfirst($val)}}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="bulkupdateStatus()">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    </div>    
+</div>
+
+<div class="modal fade bd-example-modal-lg popup" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
@@ -100,7 +129,7 @@
     </div>    
 </div>
 
-<div class="modal fade bd-example-modal-lg" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+<div class="modal fade bd-example-modal-lg popup" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
@@ -127,6 +156,7 @@
     </div>
     </div>    
 </div>
+
 @push('scripts')
 {!! $dt_html->scripts() !!}
 @endpush
@@ -134,9 +164,21 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
 <script type="text/javascript">
+$("#select_all_leads").click(function(){
+    $('input:checkbox').not(this).prop('checked', this.checked);
+
+    if($('input[type=checkbox]:checked').length > 0){
+        $("#bulk_select_section").show();
+    } else {
+        $("#bulk_select_section").hide();
+    }
+    
+});
+
 $(function(){
     new Clipboard('.copy-text');
 });
+
 $('#trumbowyg-demo').trumbowyg();
 
 $('#copiq_btn').copiq({
@@ -156,6 +198,50 @@ $('.copy-text').click(function(){
             $("#copied_alert").hide();
     }, 2000);
 });
+
+function openBulkStatusPopup(){
+    $("#bulkstatusModal").modal('toggle');
+    $("#bulkstatusModal").modal('show');
+}
+
+function bulkupdateStatus()
+{
+    var ids = [];
+    var status = $("#bulk_status_select").val();
+
+    $.each($("input[class='lead-checkboxes']:checked"), function(){
+        var data = $(this).attr('id').split("-");
+        ids.push(data[1]);
+    });
+
+    $.ajax({
+        url: "bulk-update-status",
+        dataType: 'json',
+        data:{
+            'ids': ids,
+            'status': status
+        },
+        cache: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: "POST",
+        success: function (res) {
+            $("#bulkstatusModal").modal('hide');
+            $('.table-striped').DataTable().ajax.reload();
+            $("#bulk_select_section").hide();
+        }
+    });
+}
+
+function checkboxselect()
+{
+    if($('input[type=checkbox]:checked').length > 0){
+        $("#bulk_select_section").show();
+    } else {
+        $("#bulk_select_section").hide();
+    }
+}
 
 function deleterow(id)
 {    
@@ -201,7 +287,11 @@ function openMailBoxPopup(data)
         },
         type: "POST",
         success: function (res) {
-            if(res != ""){
+            if(data.lead_contacts.length == 0){
+                $("#emails").val("No emails found! all contacts are inactive");
+            }
+
+            if(!jQuery.isEmptyObject(res) && data.lead_contacts.length > 0){
                 var all_keywords = [];
                 var body = res.body;
                 var subject = res.subject;
@@ -238,6 +328,15 @@ function openMailBoxPopup(data)
 
     $('#myModal').modal('toggle');
     $('#myModal').modal('show');
+    $("#myModal").css("display", "block");
+	$('body').css('overflow', 'hidden');
+}
+
+function closeMailBoxPopup()
+{
+    $('#myModal').modal('hide');
+    $("#myModal").css("display", "none");
+    $('body').css('overflow', 'scroll');
 }
 
 function changeStatus(data)

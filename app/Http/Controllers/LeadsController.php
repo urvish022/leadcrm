@@ -93,6 +93,16 @@ class LeadsController extends AppBaseController
     public function index(HtmlBuilder $builder)
     {
         $builder_data['columns'] = [
+            [
+                'title'          => '<input type="checkbox" id="select_all_leads">',
+                'data'           => 'checkbox',
+                'name'           => 'checkbox',
+                'orderable'      => false,
+                'searchable'     => false,
+                'exportable'     => false,
+                'printable'      => false,
+                'width'          => '10px'
+            ],
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => trans('Sr. No'), 'render' => null, 'orderable' => false, 'searchable' => false],
             ['data' => 'category', 'name' => 'category_name', 'title' => "Lead Category",'orderable' => false, 'searchable' => false],
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company"],
@@ -106,7 +116,6 @@ class LeadsController extends AppBaseController
         $builder_data['ajax'] = [
             'url'=> route('leads.list'),
             'data' => 'function(d) {
-                
                 d.filter = $("#filter_status_select").val();
             }',
             'type'=>'POST'
@@ -134,7 +143,10 @@ class LeadsController extends AppBaseController
         $sort_col = $data['order'][0]['column'];
         $sort_field = $data['columns'][$sort_col]['data'];
         
-        $leads = Leads::with('lead_categories','lead_contacts')->select('id','category_id','company_name','company_website','company_origin','reach_type','status');
+        $leads = Leads::with(['lead_categories',
+        'lead_contacts'=>function($q){
+            $q->where('status',1);
+        }])->select('id','category_id','company_name','company_website','company_origin','reach_type','status');
 
         $leads->when(request('search')['value'], function ($q){
             return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
@@ -175,6 +187,9 @@ class LeadsController extends AppBaseController
         ->editColumn('company_website', function($leads){
             return "<a href=".'http://'.$leads->company_website." target='_blank')>".$leads->company_website."</a>";
         })
+        ->addColumn('checkbox', function($leads) {
+            return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
+        })
         ->addColumn('action', function($leads) {
             $str = "<a onclick='openMailBoxPopup(".json_encode($leads).")' class='btn btn-ghost-success'><i class='fa fa-envelope'></i></a>";
             $str .= "<a href=".route('leads.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
@@ -183,7 +198,7 @@ class LeadsController extends AppBaseController
             $str .= Form::open(['route' => ['leads.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
             return $str;
         })
-        ->rawColumns(['reach_type','company_website','action'])
+        ->rawColumns(['reach_type','company_website','action','checkbox'])
         ->addIndexColumn()
         ->escapeColumns()
         ->toJSON();
@@ -313,6 +328,14 @@ class LeadsController extends AppBaseController
         $input = $request->all();
         $status = $this->leadsRepository->updateData(['id'=>$input['selected_lead']],['status'=>$input['selected_status'],'reach_type'=>$input['reach_type_select']]);
         $data = ['status'=>true,'message'=>'Status updated successfully','data'=>$status];
+        return response()->json($data);
+    }
+
+    public function bulk_change_status(Request $request)
+    {
+        $input = $request->all();
+        $status = $this->leadsRepository->updateMassData(['status'=>$input['status']],$input['ids']);
+        $data = ['status'=>true,'message'=>'Status updated successfully'];
         return response()->json($data);
     }
 }

@@ -26,6 +26,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('leads-store',[App\Http\Controllers\LeadsController::class,'import_store'])->name('leads.mass-store');
     Route::post('leads-list',[App\Http\Controllers\LeadsController::class,'list'])->name('leads.list');
     Route::post('leads-change-status',[App\Http\Controllers\LeadsController::class,'change_status'])->name('leads.change-status');
+    Route::post('bulk-update-status',[App\Http\Controllers\LeadsController::class,'bulk_change_status'])->name('leads.bulk-update-status');
     Route::resource('leads', App\Http\Controllers\LeadsController::class);
 
     Route::get('lead-email-templates/create/{id}',[App\Http\Controllers\LeadEmailController::class,'create']);
@@ -33,6 +34,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('lead-email-templates/active/{id}',[App\Http\Controllers\LeadEmailController::class,'activeEmailTemplate']);
     Route::resource('lead-email-templates',App\Http\Controllers\LeadEmailController::class);
     
+    Route::get('lead-contacts/update-status/{id}',[App\Http\Controllers\LeadContactsController::class,'updateStatus'])->name('lead-contacts.update-status');
     Route::post('lead-contacts-list', [App\Http\Controllers\LeadContactsController::class,'list'])->name('lead-contacts.list');
     Route::resource('lead-contacts', App\Http\Controllers\LeadContactsController::class);
 });

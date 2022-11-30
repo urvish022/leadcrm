@@ -66,4 +66,9 @@ class LeadsRepository extends BaseRepository
 
         return compact('scrapped','leads','followup1','followup2','in','hold','out','invalid');
     }
+
+    public function updateMassData($updateData,$ids)
+    {
+        return Leads::whereIn('id',$ids)->update($updateData);
+    }
 }

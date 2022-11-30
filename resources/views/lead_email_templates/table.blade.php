@@ -54,7 +54,6 @@
             },
             type: "GET",
             success: function (res) {
-                
                 location.reload()
             }
         });

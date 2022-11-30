@@ -34,6 +34,17 @@
                 <a class="import-leads-button pull-right" href="{{ route('leads.import') }}"><i class="fa fa-plus-square fa-lg"></i>&nbsp;Import Leads</a>
             </div>
         </div>
+        <br>
+        <div class="row" style="display:none" id="bulk_select_section">
+            <div class="col-lg-12">
+                <div>
+                    <button type="button" class="btn btn-danger pull-right" ><i class="fa fa-trash fa-lg"></i>&nbsp;Delete</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-warning pull-right" onclick="openBulkStatusPopup()"><i class="fa fa-tag fa-lg"></i>&nbsp;Change Status</button>
+                </div>
+            </div>
+        </div>
     </div>
     <br>
     <div class="container-fluid">
