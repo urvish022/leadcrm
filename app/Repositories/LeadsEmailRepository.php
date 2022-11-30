@@ -73,6 +73,8 @@ class LeadsEmailRepository extends BaseRepository
             return 'followup2';
         } else if($type == 'followup2') {
             return 'thankyou';
+        } else if($type == 'out'){
+            return 'thankyou';
         }
     }
 
