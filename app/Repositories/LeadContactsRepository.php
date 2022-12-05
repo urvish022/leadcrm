@@ -42,4 +42,8 @@ class LeadContactsRepository extends BaseRepository
     {
         return LeadContacts::updateOrCreate($checkData,$insertData);
     }
+
+    public function getCount($where){
+        return LeadContacts::where($where)->count();
+    }
 }

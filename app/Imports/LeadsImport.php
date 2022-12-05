@@ -15,7 +15,7 @@ class LeadsImport implements FromCollection
         $filteredData = [];
         foreach($collection as $key => $val){
             if($key != 0 && !is_null($val[1])){
-                $row['company'] = $val[0];
+                $row['company'] =  ucfirst(strtolower($val[0]));
                 $row['company_website'] = $this->getWebsite($val[1]);
                 $row['first_name'] = $val[2];
                 $row['last_name'] = $val[3];

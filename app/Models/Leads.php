@@ -32,6 +32,7 @@ class Leads extends Model
         'company_name',
         'company_website',
         'company_origin',
+        'status'
     ];
 
     /**

@@ -14,6 +14,8 @@ use Datatables;
 use HtmlBuilder;
 use App\Imports\LeadsImport;
 use App\Models\Leads;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
 use Form;
 
 class LeadsController extends AppBaseController
@@ -337,5 +339,34 @@ class LeadsController extends AppBaseController
         $status = $this->leadsRepository->updateMassData(['status'=>$input['status']],$input['ids']);
         $data = ['status'=>true,'message'=>'Status updated successfully'];
         return response()->json($data);
+    }
+
+    public function send_mail(Request $request)
+    {
+        $body = $request->body;
+        $subject = $request->subject;
+        
+        if(env('APP_ENV') == 'local'){
+            $to_emails = ['test-d90w6e2jr@srv1.mail-tester.com'];
+        } else {
+            $to_emails = $request->emails;
+            $to_emails = explode(",",$to_emails);
+        }
+
+        try{
+            $body = View::make('email_template.index')->with(['body'=>$body]);
+            
+            $status = Mail::html($body,function($message) use($subject,$to_emails,$body){
+                $message->to($to_emails)
+                ->subject($subject)
+                ->replyTo(env('MAIL_FROM_ADDRESS'))
+                ->bcc(env('BCC_EMAIL'))
+                ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
+            });
+
+            return response()->json(['status'=>$status,'message'=>'Mail sent successfully!']);
+        } catch (\Exception $e){
+            return response()->json(['status'=>false,'message'=>$e->getMessage()]);
+        }
     }
 }

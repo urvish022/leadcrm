@@ -57,6 +57,7 @@
             </div>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="send_mail_btn" onclick="sendMail()">Send Mail</button>
           <button type="button" class="btn btn-default" onclick="closeMailBoxPopup()">Close</button>
         </div>
       </div>
@@ -322,6 +323,13 @@ function openMailBoxPopup(data)
                 }
                 
                 $("#emails").val(emails.toString());
+                if($("#subject").val() == ""){
+                    $("#send_mail_btn").attr('disabled',true);
+                } else {
+                    $("#send_mail_btn").prop('disabled',false);
+                }
+            } else {
+                $("#send_mail_btn").attr('disabled',true);
             }
         }
     });
@@ -330,6 +338,7 @@ function openMailBoxPopup(data)
     $('#myModal').modal('show');
     $("#myModal").css("display", "block");
 	$('body').css('overflow', 'hidden');
+
 }
 
 function closeMailBoxPopup()
@@ -402,6 +411,31 @@ function filterStatus()
 {
     $("#filterModal").modal('hide');
     $('.table-striped').DataTable().ajax.reload()
+}
+
+function sendMail(){
+
+    var emails = $("#emails").val();
+    var subject = $("#subject").val();
+    var body = $("#trumbowyg-demo").html();
+
+    $.ajax({
+        url: "/send-mail",
+        dataType: 'json',
+        data:{
+            'emails': emails,
+            'subject': subject,
+            'body': body
+        },
+        cache: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        type: "POST",
+        success: function (res) {
+            closeMailBoxPopup();
+        }
+    });
 }
 </script>
 @endpush

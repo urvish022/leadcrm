@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateLeadContactsRequest;
 use App\Http\Requests\UpdateLeadContactsRequest;
-use App\Repositories\LeadContactsRepository;
+use App\Repositories\{LeadsRepository,LeadContactsRepository};
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use App\Models\LeadContacts;
@@ -17,11 +17,12 @@ use Response;
 class LeadContactsController extends AppBaseController
 {
     /** @var  LeadContactsRepository */
-    private $leadContactsRepository;
+    private $leadContactsRepository, $leadsRepository;
 
-    public function __construct(LeadContactsRepository $leadContactsRepo)
+    public function __construct(LeadContactsRepository $leadContactsRepo, LeadsRepository $leadsRepo)
     {
         $this->leadContactsRepository = $leadContactsRepo;
+        $this->leadsRepository = $leadsRepo;
     }
 
     /**
@@ -86,7 +87,11 @@ class LeadContactsController extends AppBaseController
 
         return DataTables::of($leads)
         ->editColumn('company_name', function($leads){
-            return "<a href=".route('leads.show',[$leads->lead_id]).">".$leads->leads_detail->company_name."</a>";
+            if(isset($leads->leads_detail)){
+                return "<a href=".route('leads.show',[$leads->lead_id]).">".$leads->leads_detail->company_name."</a>";
+            } else {
+                return "";
+            }
         })
         ->editColumn('first_name', function($leads){
             return $leads->first_name." ".$leads->last_name;
@@ -242,6 +247,17 @@ class LeadContactsController extends AppBaseController
         $status = $leadContacts->status == 1 ? 0 : 1;
 
         $this->leadContactsRepository->update(['status'=>$status],$id);
+        
+        if($status == 0){
+            $leadContact = $this->leadContactsRepository->find($id);
+            $lead_id = $leadContacts->lead_id;
+
+            $count = $this->leadContactsRepository->getCount(['lead_id'=>$lead_id,'status'=>1]);
+
+            if($count == 0){
+                $this->leadsRepository->update(['status'=>'invalid'],$lead_id);
+            }
+        }
 
         return response()->json(['status'=>true]);
     }
