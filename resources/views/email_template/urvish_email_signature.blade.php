@@ -1,5 +1,8 @@
 <div dir="ltr" class="gmail_signature" data-smartmail="gmail_signature">
   <div dir="ltr">
+    <div>
+      <img width="66" height="86" src="https://ci3.googleusercontent.com/mail-sig/AIorK4xfixq4UZTvkTKcRkZhZub1WsJxqJ0XTMIXiRBY3RoaDh-XTqm09mfBvyvpZdpuFWXI_4Znt_c">
+    </div>
     <b>
       <font face="tahoma, sans-serif" size="3">
         <u>Urvish Patel</u>
