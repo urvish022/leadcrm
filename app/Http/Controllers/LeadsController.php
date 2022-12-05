@@ -360,8 +360,8 @@ class LeadsController extends AppBaseController
                 $message->to($to_emails)
                 ->subject($subject)
                 ->replyTo(env('MAIL_FROM_ADDRESS'))
-                ->bcc(env('BCC_EMAIL'));
-                // ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
+                // ->bcc(env('BCC_EMAIL'));
+                ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
             });
 
             return response()->json(['status'=>$status,'message'=>'Mail sent successfully!']);
