@@ -347,7 +347,7 @@ class LeadsController extends AppBaseController
         $subject = $request->subject;
         
         if(env('APP_ENV') == 'local'){
-            $to_emails = ['test-d90w6e2jr@srv1.mail-tester.com'];
+            $to_emails = ['urvishh@mailinator.com'];
         } else {
             $to_emails = $request->emails;
             $to_emails = explode(",",$to_emails);
@@ -360,8 +360,8 @@ class LeadsController extends AppBaseController
                 $message->to($to_emails)
                 ->subject($subject)
                 ->replyTo(env('MAIL_FROM_ADDRESS'))
-                ->bcc(env('BCC_EMAIL'))
-                ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
+                ->bcc(env('BCC_EMAIL'));
+                // ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
             });
 
             return response()->json(['status'=>$status,'message'=>'Mail sent successfully!']);
