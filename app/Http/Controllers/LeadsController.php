@@ -347,7 +347,7 @@ class LeadsController extends AppBaseController
         $subject = $request->subject;
         
         if(env('APP_ENV') == 'local'){
-            $to_emails = ['urvishh@mailinator.com'];
+            $to_emails = ['urvishpatel022@gmail.com'];
         } else {
             $to_emails = $request->emails;
             $to_emails = explode(",",$to_emails);
