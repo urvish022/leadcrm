@@ -26,9 +26,11 @@ class LeadContacts extends Model
         'lead_id',
         'first_name',
         'last_name',
+        'title',
         'email',
-        'linkedin_profile',
-        'status'
+        'email_status',
+        'phone',
+        'linkedin_profile'
     ];
 
     /**

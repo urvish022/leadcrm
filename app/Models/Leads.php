@@ -30,9 +30,20 @@ class Leads extends Model
         'created_by_id',
         'category_id',
         'company_name',
+        'company_email',
+        'company_phone_number',
         'company_website',
+        'total_employees',
+        'facebook_url',
+        'linkedin_url',
+        'twitter_url',
+        'industry_type',
         'company_origin',
-        'status'
+        'company_state',
+        'company_city',
+        'company_address',
+        'annual_revenue',
+        'keywords'
     ];
 
     /**

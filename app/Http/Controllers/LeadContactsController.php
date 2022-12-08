@@ -38,8 +38,8 @@ class LeadContactsController extends AppBaseController
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => trans('Sr. No'), 'render' => null, 'orderable' => false, 'searchable' => false],
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company Name",'orderable' => false, 'searchable' => false],
             ['data' => 'first_name', 'name' => 'first_name', 'title' => "Name"],
-            ['data' => 'email', 'name' => 'email', 'title' => "Email"],
-            ['data' => 'linkedin_profile', 'name' => 'linkedin_profile', 'title' => "Linkedin Profile"],
+            ['data' => 'details', 'name' => 'details', 'title' => "Details"],
+            ['data' => 'phone', 'name' => 'phone', 'title' => "Phone"],
             ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
         ];
@@ -96,18 +96,28 @@ class LeadContactsController extends AppBaseController
         ->editColumn('first_name', function($leads){
             return $leads->first_name." ".$leads->last_name;
         })
-        ->editColumn('email', function($leads){
-            return "<a href='mailto:'.$leads->email)>".$leads->email."</a>";
+        ->editColumn('phone', function($leads){
+            if(!empty($leads->phone) && $leads->phone != 0){
+                return "<a href='tel:.$leads->phone.')>".$leads->phone."</a>";
+            }
         })
-        ->editColumn('linkedin_profile', function($leads){
-            return "<a href=".$leads->linkedin_profile." target='_blank')>".$leads->linkedin_profile."</a>";
-        })
+        // ->editColumn('linkedin_profile', function($leads){
+        //     return "<a href=".$leads->linkedin_profile." target='_blank')>".$leads->linkedin_profile."</a>";
+        // })
         ->editColumn('status', function($leads){
             if($leads->status){
                 return "<button type='button' onclick=updateStatus(".$leads->id.",'active') class='btn btn-success'>Active</button>";
             } else {
                 return "<button type='button' onclick=updateStatus(".$leads->id.",'inactive') class='btn btn-warning'>Inactive</button>";
             }
+        })
+        ->addColumn('details',function($leads){
+            $str = "";
+            $str .= "<a title=".$leads->email." href='mailto:'.$leads->email)><i class='fa fa-envelope'></i></a>";
+            $str .= "&nbsp;&nbsp;";
+            $str .= "<a href=".$leads->linkedin_profile." target='_blank')><i class='fa fa-linkedin'></i></a>";
+
+            return $str;
         })
         ->addColumn('action', function($leads) {
             
@@ -116,7 +126,7 @@ class LeadContactsController extends AppBaseController
             $str .= Form::open(['route' => ['lead-contacts.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
             return $str;
         })
-        ->rawColumns(['company_name','email','linkedin_profile','status','action'])
+        ->rawColumns(['company_name','phone','linkedin_profile','status','action','details'])
         ->addIndexColumn()
         ->escapeColumns()
         ->toJSON();

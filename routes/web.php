@@ -39,3 +39,5 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('lead-contacts-list', [App\Http\Controllers\LeadContactsController::class,'list'])->name('lead-contacts.list');
     Route::resource('lead-contacts', App\Http\Controllers\LeadContactsController::class);
 });
+
+Route::get('sample-mail',[App\Http\Controllers\LeadsController::class,'test_email']);

@@ -17,9 +17,12 @@ use App\Models\Leads;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use Form;
+use App\Traits\UtilTrait;
+use QuickEmailVerification;
 
 class LeadsController extends AppBaseController
 {
+    use UtilTrait;
     /** @var  LeadsRepository */
     private $leadsRepository, $leadCategoryRepository, $leadContactsRepository;
 
@@ -45,13 +48,41 @@ class LeadsController extends AppBaseController
                     $last_name = ucfirst($val[3]);
                     $email = $val[4];
                     $linkedin_profile = $val[5];
-                    $country = $val[6];
+                    $title = $val[6];
+                    $email_status = $val[7];
+                    $employee_phone_number = $this->australiaPhoneNumberFormat($val[8]);
+                    $company_phone_number = $this->australiaPhoneNumberFormat($val[9]);
+                    $employees = $val[10];
+                    $industry = $val[11];
+                    $keywords = $val[12];
+                    $company_email = $val[13];
+                    $company_linkedin_url = $val[14];
+                    $company_facebook_url = $val[15];
+                    $company_twitter_url = $val[16];
+                    $city = $val[17];
+                    $state = $val[18];
+                    $company_address = $val[19];
+                    $country = $val[20];
+                    $revenue = $val[21];
                     
                     $leadData = $this->leadsRepository->updateOrCreate(['company_website'=>$company_website],[
                         'created_by_id'=> auth()->id(),
                         'category_id'=> $request->category_id,
                         'company_name'=>$company_name,
-                        'company_origin'=>$country
+                        'company_email'=>$company_email,
+                        'company_phone_number'=>$company_phone_number,
+                        'company_website'=>$company_website,
+                        'total_employees'=>$employees,
+                        'facebook_url'=>$company_facebook_url,
+                        'linkedin_url'=>$company_linkedin_url,
+                        'twitter_url'=>$company_twitter_url,
+                        'industry_type'=>$industry,
+                        'company_origin'=>$country,
+                        'company_state'=>$state,
+                        'company_city'=>$city,
+                        'company_address'=>$company_address,
+                        'annual_revenue'=>$revenue,
+                        'keywords'=>$keywords
                     ]);
 
                     if($leadData)
@@ -60,7 +91,10 @@ class LeadsController extends AppBaseController
                             'lead_id'=>$leadData->id,
                             'first_name'=>$first_name,
                             'last_name'=>$last_name,
+                            'title'=>$title,
                             'email'=>$email,
+                            'email_status'=>$email_status,
+                            'phone'=>$employee_phone_number,
                             'linkedin_profile'=>$linkedin_profile
                         ]);
                     }
@@ -368,5 +402,64 @@ class LeadsController extends AppBaseController
         } catch (\Exception $e){
             return response()->json(['status'=>false,'message'=>$e->getMessage()]);
         }
+    }
+
+    public function test_email()
+    {
+        $status = false;
+        $email = "chuckm@briteblinds.ca";
+        $client   = new QuickEmailVerification\Client(env("QUICKEMAIL_API_KEY"));
+        $quickemailverification  = $client->quickemailverification();
+
+        try {
+            // SANDBOX MODE
+            if(env('APP_ENV') == 'local'){
+                $response = $quickemailverification->sandbox($email);
+            } else {
+               $response = $quickemailverification->verify($email); 
+            }
+            
+            if(isset($response->body)){
+                $status = $response->body['result'] == 'valid' ? true : false;
+            }
+        }
+        catch (Exception $e) {
+            // echo "Code: " . $e->getCode() . " Message: " . $e->getMessage();
+            $status = false;
+        }
+
+        $URL = 'https://www.codexworld.com';
+
+        if(isSiteAvailible($URL)){
+            echo 'The website is available.';      
+        }else{
+        echo 'Woops, the site is not found.'; 
+        }
+
+        return $status;
+    }
+
+    function isSiteAvailible($url){
+        // Check, if a valid url is provided
+        if(!filter_var($url, FILTER_VALIDATE_URL)){
+            return false;
+        }
+
+        // Initialize cURL
+        $curlInit = curl_init($url);
+        
+        // Set options
+        curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
+        curl_setopt($curlInit,CURLOPT_HEADER,true);
+        curl_setopt($curlInit,CURLOPT_NOBODY,true);
+        curl_setopt($curlInit,CURLOPT_RETURNTRANSFER,true);
+
+        // Get response
+        $response = curl_exec($curlInit);
+        
+        // Close a cURL session
+        curl_close($curlInit);
+
+        return $response?true:false;
     }
 }

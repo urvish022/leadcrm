@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d270c20fb7ba8b0a66242fc67c13c1db",
+    "content-hash": "166c38363af46bfc3b25c5008cdaad17",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3852,6 +3852,66 @@
                 "source": "https://github.com/bobthecow/psysh/tree/v0.11.1"
             },
             "time": "2022-01-03T13:58:38+00:00"
+        },
+        {
+            "name": "quickemailverification/quickemailverification",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/quickemailverification/quickemailverification-php.git",
+                "reference": "c22a6fecee195d5c10c1c292b351630e2743e7b5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/quickemailverification/quickemailverification-php/zipball/c22a6fecee195d5c10c1c292b351630e2743e7b5",
+                "reference": "c22a6fecee195d5c10c1c292b351630e2743e7b5",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.3",
+                "phpunit/phpunit": "^4.8 || ^5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "QuickEmailVerification\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "quickemailverification",
+                    "email": "support@quickemailverification.com",
+                    "homepage": "https://quickemailverification.com"
+                }
+            ],
+            "description": "Official QuickEmailVerification API library client for PHP",
+            "homepage": "https://quickemailverification.com",
+            "keywords": [
+                "api",
+                "client",
+                "email",
+                "email verification api",
+                "free",
+                "library",
+                "quickemailverification",
+                "sandbox api",
+                "validation",
+                "verification",
+                "verify"
+            ],
+            "support": {
+                "issues": "https://github.com/quickemailverification/quickemailverification-php/issues",
+                "source": "https://github.com/quickemailverification/quickemailverification-php/tree/v1.0.3"
+            },
+            "time": "2022-06-14T10:07:08+00:00"
         },
         {
             "name": "ralouphie/getallheaders",
