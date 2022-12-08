@@ -38,7 +38,7 @@ class LeadContactsController extends AppBaseController
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => trans('Sr. No'), 'render' => null, 'orderable' => false, 'searchable' => false],
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company Name",'orderable' => false, 'searchable' => false],
             ['data' => 'first_name', 'name' => 'first_name', 'title' => "Name"],
-            ['data' => 'details', 'name' => 'details', 'title' => "Details"],
+            ['data' => 'details', 'name' => 'details', 'title' => "Details",'orderable' => false, 'searchable' => false],
             ['data' => 'phone', 'name' => 'phone', 'title' => "Phone"],
             ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
