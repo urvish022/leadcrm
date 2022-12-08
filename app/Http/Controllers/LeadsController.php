@@ -105,6 +105,7 @@ class LeadsController extends AppBaseController
             Flash::success('Leads imported successfully!');
             return redirect(route('leads.index'));
         } catch(\exception $e){
+            \Log::error($e);
             DB::rollback();
             Flash::error('Something went wrong!');
             return redirect(route('leads.index'));
