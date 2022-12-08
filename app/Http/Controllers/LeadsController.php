@@ -409,6 +409,25 @@ class LeadsController extends AppBaseController
     {
         $status = false;
         $email = "chuckm@briteblinds.ca";
+        // $emails = [
+        //     "tammy@domenicksblinds.com",
+        //     "chuckm@briteblinds.ca", "ginae@briteblinds.ca",
+        //     "donna.currier@rockwoodshutters.com", "hello@emailrockwood.com",
+        //     "annette@elizabethshutters.com", "info@elizabethshutters.com",
+        //     "kevin@privacyglasssolutions.com", "info@privacyglasssolutions.com",
+        //     "avergara@newhorizonshutters.com", "info@newhorizonshutters.com",
+        //     "lucas.polka@anionblinds.com", "anion@anionblinds.com", "anionjp@sbcglobal.net",
+        //     "tomjr@floridashuttersinc.com", "tomjr@floridashuttersinc.com",
+        //     "phil@blindsdesigns.com","rob@blindsdesigns.com","kim@blindsdesigns.com", "robert@blindsdesigns.com",
+        //     "polsters@blindsofallkinds.com", "wj@blindsofallkinds.com",
+        //     "dusevic@mastercraftshuttersandblinds.com", "sales@mastercraftshuttersandblinds.com",
+        //     "amir@primeshuttersllc.com", "info@primeshuttersllc.com",
+        //     "info@colemansfw.com",
+        //     "rob@acadiashutters.com","info@acadiashutters.com","wil@acadiashutters.com","info@acadiashutters.com",
+        //     "cindyc@abetterblind.com", "info@abetterblind.com",
+        //     "amyg@shenandoahshutters.com", "info@shenandoahshutters.com"
+        // ];
+
         $client   = new QuickEmailVerification\Client(env("QUICKEMAIL_API_KEY"));
         $quickemailverification  = $client->quickemailverification();
 
@@ -417,25 +436,33 @@ class LeadsController extends AppBaseController
             if(env('APP_ENV') == 'local'){
                 $response = $quickemailverification->sandbox($email);
             } else {
-               $response = $quickemailverification->verify($email); 
+                // foreach($emails as $val){
+                //     $response = $quickemailverification->verify($val); 
+
+                //     if(isset($response->body)){
+                //         $status = $response->body['result'] == 'valid' ? true : false;
+                //     }
+
+                //     echo $val." - ".$status;
+                //     echo "\n";
+                // }
+                $response = $quickemailverification->verify($email); 
             }
             
-            if(isset($response->body)){
-                $status = $response->body['result'] == 'valid' ? true : false;
-            }
+            
         }
         catch (Exception $e) {
             // echo "Code: " . $e->getCode() . " Message: " . $e->getMessage();
             $status = false;
         }
 
-        $URL = 'https://www.codexworld.com';
+        // $URL = 'https://www.codexworld.com';
 
-        if(isSiteAvailible($URL)){
-            echo 'The website is available.';      
-        }else{
-        echo 'Woops, the site is not found.'; 
-        }
+        // if(isSiteAvailible($URL)){
+        //     echo 'The website is available.';      
+        // }else{
+        // echo 'Woops, the site is not found.'; 
+        // }
 
         return $status;
     }
