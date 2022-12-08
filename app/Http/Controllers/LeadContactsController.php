@@ -72,7 +72,9 @@ class LeadContactsController extends AppBaseController
         $sort_col = $data['order'][0]['column'];
         $sort_field = $data['columns'][$sort_col]['data'];
         
-        $leads = LeadContacts::whereHas('leads_detail');
+        $leads = LeadContacts::whereHas('leads_detail',function($q){
+            $q->where('created_by_id',auth()->id());
+        });
         
         $leads->when(request('search')['value'], function ($q){
             return $q->where('first_name', 'LIKE', '%' . request('search')['value'] . '%')
