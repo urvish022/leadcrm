@@ -227,6 +227,7 @@ class LeadsController extends AppBaseController
             return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
         })
         ->addColumn('action', function($leads) {
+            $leads->company_name = str_replace("'",'',$leads->company_name);
             $str = "<a onclick='openMailBoxPopup(".json_encode($leads).")' class='btn btn-ghost-success'><i class='fa fa-envelope'></i></a>";
             $str .= "<a href=".route('leads.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
             $str .= "<a href=".route('leads.edit', [$leads->id])." class='btn btn-ghost-info'><i class='fa fa-edit'></i></a>";
