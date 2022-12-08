@@ -316,6 +316,10 @@ function openMailBoxPopup(data)
                 $("#subject").val(subject);
 
                 var emails = [];
+                if(data.company_email != ""){
+                    emails.push(data.company_email);
+                }
+                
                 for(var i=0;i< data.lead_contacts.length;i++){
                     emails.push(data.lead_contacts[i].email);
                 }
