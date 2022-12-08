@@ -182,7 +182,7 @@ class LeadsController extends AppBaseController
         $leads = Leads::with(['lead_categories',
         'lead_contacts'=>function($q){
             $q->where('status',1);
-        }])->select('id','category_id','company_name','company_website','company_origin','reach_type','status');
+        }])->select('id','category_id','company_name','company_website','company_origin','reach_type','status')->where('status','!=','invalid');
 
         $leads->when(request('search')['value'], function ($q){
             return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')

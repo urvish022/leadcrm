@@ -25,7 +25,8 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $data = $this->leadsRepo->getDashboardCounts();
+        $authId = auth()->id();
+        $data = $this->leadsRepo->getDashboardCounts($authId);
         return view('home')->with('statistics',$data);
     }
 }
