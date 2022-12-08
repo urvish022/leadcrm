@@ -39,7 +39,7 @@ class LeadContactsController extends AppBaseController
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company Name",'orderable' => false, 'searchable' => false],
             ['data' => 'first_name', 'name' => 'first_name', 'title' => "Name"],
             ['data' => 'details', 'name' => 'details', 'title' => "Details",'orderable' => false, 'searchable' => false],
-            ['data' => 'phone', 'name' => 'phone', 'title' => "Phone"],
+            ['data' => 'phone', 'name' => 'phone', 'title' => "Phone",'orderable' => false, 'searchable' => false],
             ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
         ];
