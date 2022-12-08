@@ -300,8 +300,6 @@ function openMailBoxPopup(data)
                 all_keywords = keywords.split(", ");
                 for(var i=0;i<all_keywords.length;i++)
                 {
-                    console.log(all_keywords[i]);
-                    console.log(data[all_keywords[i]]);
                     body = body.replaceAll(all_keywords[i],data[all_keywords[i]]);
 
                     if(all_keywords[i].search('website') > 0){
