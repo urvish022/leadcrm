@@ -143,8 +143,11 @@ class LeadsController extends AppBaseController
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => trans('Sr. No'), 'render' => null, 'orderable' => false, 'searchable' => false],
             ['data' => 'category', 'name' => 'category_name', 'title' => "Lead Category",'orderable' => false, 'searchable' => false],
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company"],
-            ['data' => 'company_website', 'name' => 'company_website', 'title' => "Website"],
+            ['data' => 'company_phone_number', 'name' => 'company_phone_number', 'title' => "Phone"],
+            ['data' => 'company_details', 'name' => 'company_details', 'title' => "Details",'orderable' => false, 'searchable' => false],
             ['data' => 'company_origin', 'name' => 'company_origin', 'title' => "Country"],
+            ['data' => 'total_employees', 'name' => 'total_employees', 'title' => "Employees"],
+            ['data' => 'annual_revenue', 'name' => 'annual_revenue', 'title' => "Annual Revenue"],
             ['data' => 'reach_type', 'name' => 'reach_type', 'title' => "Reach"],
             ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
@@ -183,7 +186,7 @@ class LeadsController extends AppBaseController
         $leads = Leads::with(['lead_categories',
         'lead_contacts'=>function($q){
             $q->where('status',1);
-        }])->select('id','category_id','company_name','company_website','company_origin','reach_type','status')
+        }])
         ->where('status','!=','invalid')
         ->where('created_by_id',auth()->id());
 
@@ -217,17 +220,51 @@ class LeadsController extends AppBaseController
                 return "<i class='fa fa-cog'></i> ".ucfirst($leads->reach_type);
             }
         })
+        ->editColumn('company_phone_number', function($leads){
+            return !empty($leads->company_phone_number) && $leads->company_phone_number != 0 ? $leads->company_phone_number : "";
+        })
         ->editColumn('category', function($leads){
             return $leads->lead_categories->category_name;
         })
         ->editColumn('status', function($leads){
             return ucfirst($leads->status);
         })
-        ->editColumn('company_website', function($leads){
-            return "<a href=".'http://'.$leads->company_website." target='_blank')>".$leads->company_website."</a>";
+        ->editColumn('annual_revenue', function($leads){
+            if(!empty($leads->annual_revenue)){
+                return "$".number_format($leads->annual_revenue);
+            }
         })
         ->addColumn('checkbox', function($leads) {
             return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
+        })
+        ->addColumn('company_details',function($leads){
+            $str = "<a href=".'http://'.$leads->company_website." target='_blank'><i class='fa fa-globe'></i></a>";
+
+            if(!empty($leads->company_email)){
+                $str .= "&nbsp;&nbsp;";
+                $str .= "<a href='mailto:$leads->company_email' target='_blank'><i class='fa fa-envelope'></i></a>";
+            }
+
+            if(!empty($leads->facebook_url)){
+                $str .= "&nbsp;&nbsp;";
+                $str .= "<a href='$leads->facebook_url' target='_blank'><i class='fa fa-facebook-square'></i></a>";
+            }
+            
+            if(!empty($leads->linkedin_url)){
+                $str .= "&nbsp;&nbsp;";
+                $str .= "<a href='$leads->linkedin_url' target='_blank'><i class='fa fa-linkedin-square'></i></a>";
+            }
+
+            if(!empty($leads->twitter_url)){
+                $str .= "&nbsp;&nbsp;";
+                $str .= "<a href='$leads->twitter_url' target='_blank'><i class='fa fa-twitter-square'></i></a>";
+            }
+
+            // $str .= "<br>";
+
+            // $str .= strlen($leads->keywords) > 100 ? substr($leads->keywords,0,100).", and more.." : $leads->keywords;
+
+            return $str;
         })
         ->addColumn('action', function($leads) {
             $leads->company_name = str_replace("'",'',$leads->company_name);
@@ -238,7 +275,7 @@ class LeadsController extends AppBaseController
             $str .= Form::open(['route' => ['leads.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
             return $str;
         })
-        ->rawColumns(['reach_type','company_website','action','checkbox'])
+        ->rawColumns(['reach_type','action','checkbox','company_details'])
         ->addIndexColumn()
         ->escapeColumns()
         ->toJSON();
