@@ -41,7 +41,7 @@
             </div>
             <div class="form-group">
                 <label for="recipient-name" class="col-form-label">Subject: </label>
-                <a class="copy-text" data-clipboard-target="#subject" href="#">
+                <a class="copy-text" data-clipboard-target="#subject">
                     <i class="fa fa-clipboard">
                     </i>
                 </a>
@@ -49,7 +49,7 @@
             </div>
             <div class="form-group">
                 <label for="recipient-name" class="col-form-label">Body: </label>
-                    <a href="#" class="copy copyi-button" id="copiq_btn" >
+                    <a class="copy copyi-button" id="copiq_btn" >
                             <i class="fa fa-clipboard"></i>
                     </a>
                     <div class="my-editor" id="trumbowyg-demo"></div>
