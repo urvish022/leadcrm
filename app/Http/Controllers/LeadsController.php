@@ -260,9 +260,8 @@ class LeadsController extends AppBaseController
                 $str .= "<a href='$leads->twitter_url' target='_blank'><i class='fa fa-twitter-square'></i></a>";
             }
 
-            // $str .= "<br>";
-
-            // $str .= strlen($leads->keywords) > 100 ? substr($leads->keywords,0,100).", and more.." : $leads->keywords;
+            $str .= "<br>";
+            $str .= strlen($leads->keywords) > 100 ? substr($leads->keywords,0,100).", and more.." : $leads->keywords;
 
             return $str;
         })
