@@ -33,7 +33,7 @@
             </div>
             <div class="form-group">
                 <label for="recipient-name" class="col-form-label">To: </label>
-                <a class="copy-text" data-clipboard-target="#emails" href="#">
+                <a class="copy-text" data-clipboard-target="#emails">
                     <i class="fa fa-clipboard">
                     </i>
                 </a>
@@ -319,7 +319,7 @@ function openMailBoxPopup(data)
                 if(data.company_email != ""){
                     emails.push(data.company_email);
                 }
-                
+
                 for(var i=0;i< data.lead_contacts.length;i++){
                     emails.push(data.lead_contacts[i].email);
                 }
