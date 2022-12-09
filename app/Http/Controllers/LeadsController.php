@@ -186,9 +186,7 @@ class LeadsController extends AppBaseController
         $leads = Leads::with(['lead_categories',
         'lead_contacts'=>function($q){
             $q->where('status',1);
-        }])
-        ->where('status','!=','invalid')
-        ->where('created_by_id',auth()->id());
+        }]);
 
         $leads = $leads->when(request('search')['value'], function ($q){
             return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
@@ -200,6 +198,9 @@ class LeadsController extends AppBaseController
         $leads = $leads->when(request('filter'), function ($q){
             $q->where('status', '=', request('filter'));            
         });
+
+        $leads = $leads->where('status','!=','invalid')
+        ->where('created_by_id',auth()->id());
 
         $leads = $leads->when(empty(request('order')[0]['column']), function($q){
             return $q->orderBy('id','DESC');
