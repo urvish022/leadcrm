@@ -196,9 +196,9 @@ class LeadsController extends AppBaseController
                 ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%');
         });
 
-        // $leads = $leads->when(request('filter'), function ($q){
-        //     $q->where('status', '=', request('filter'));            
-        // });
+        $leads = $leads->when(request('filter'), function ($q){
+            $q->where('status', '=', request('filter'));            
+        });
 
         $leads = $leads->when(empty(request('order')[0]['column']), function($q){
             return $q->orderBy('id','DESC');
