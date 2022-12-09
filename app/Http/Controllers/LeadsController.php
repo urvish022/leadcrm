@@ -186,21 +186,22 @@ class LeadsController extends AppBaseController
         $leads = Leads::with(['lead_categories',
         'lead_contacts'=>function($q){
             $q->where('status',1);
-        }]);
+        }])
+        ->where('status','!=','invalid')
+        ->where('created_by_id',auth()->id());
 
         $leads = $leads->when(request('search')['value'], function ($q){
             return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
-            ->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
-            ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%')
-            ->orWhere('status', 'LIKE', '%' . request('search')['value'] . '%');
+            ->where(function($q){
+            $q->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
+                ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%')
+                ->orWhere('status', 'LIKE', '%' . request('search')['value'] . '%');
+            });
         });
 
-        $leads = $leads->when(request('filter'), function ($q){
-            $q->where('status', '=', request('filter'));            
-        });
-
-        $leads = $leads->where('status','!=','invalid')
-        ->where('created_by_id',auth()->id());
+        // $leads = $leads->when(request('filter'), function ($q){
+        //     $q->where('status', '=', request('filter'));            
+        // });
 
         $leads = $leads->when(empty(request('order')[0]['column']), function($q){
             return $q->orderBy('id','DESC');
