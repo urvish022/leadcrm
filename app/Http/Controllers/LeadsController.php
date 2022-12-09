@@ -191,12 +191,10 @@ class LeadsController extends AppBaseController
         ->where('created_by_id',auth()->id());
 
         $leads = $leads->when(request('search')['value'], function ($q){
-            return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
-            ->orWhere(function($q){
-            $q->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
+            return $q->orWhere('company_name', 'LIKE', '%' . request('search')['value'] . '%')
+                ->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
                 ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%')
                 ->orWhere('status', 'LIKE', '%' . request('search')['value'] . '%');
-            });
         });
 
         // $leads = $leads->when(request('filter'), function ($q){
