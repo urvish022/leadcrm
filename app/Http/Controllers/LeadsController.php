@@ -190,18 +190,18 @@ class LeadsController extends AppBaseController
         ->where('status','!=','invalid')
         ->where('created_by_id',auth()->id());
 
-        $leads->when(request('search')['value'], function ($q){
+        $leads = $leads->when(request('search')['value'], function ($q){
             return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
             ->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
             ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%')
             ->orWhere('status', 'LIKE', '%' . request('search')['value'] . '%');
         });
 
-        $leads->when(request('filter'), function ($q){
+        $leads = $leads->when(request('filter'), function ($q){
             $q->where('status', '=', request('filter'));            
         });
 
-        $leads->when(empty(request('order')[0]['column']), function($q){
+        $leads = $leads->when(empty(request('order')[0]['column']), function($q){
             return $q->orderBy('id','DESC');
         });
 

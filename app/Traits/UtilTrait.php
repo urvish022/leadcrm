@@ -9,6 +9,7 @@ trait UtilTrait
         $string = preg_replace('/[^A-Za-z0-9\-]/', '', $string);
         $string = preg_replace('/-+/', '', $string);
         $string = str_replace('61','',$string);
+        $string = str_replace('1','',$string);
         
         $string = strlen($string) > 9 ? $string : "0".$string;
         
