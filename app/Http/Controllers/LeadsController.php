@@ -192,7 +192,7 @@ class LeadsController extends AppBaseController
 
         $leads = $leads->when(request('search')['value'], function ($q){
             return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
-            ->where(function($q){
+            ->orWhere(function($q){
             $q->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
                 ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%')
                 ->orWhere('status', 'LIKE', '%' . request('search')['value'] . '%');
