@@ -439,5 +439,23 @@ function sendMail(){
         }
     });
 }
+
+function exportLeads(){
+    window.open("{{route('leads.export-leads')}}");
+    return;
+
+    // $.ajax({
+    //     url: "/export-leads",
+    //     dataType: 'json',
+    //     cache: false,
+    //     headers: {
+    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //     },
+    //     type: "POST",
+    //     success: function (res) {
+
+    //     }
+    // });
+}
 </script>
 @endpush

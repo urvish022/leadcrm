@@ -32,6 +32,7 @@
             <div class="col-lg-12">
                 <a class="filter-button pull-right" href="#" onclick="filterPopup()"><i class="fa fa-filter fa-lg"></i>&nbsp;Filter</a>
                 <a class="import-leads-button pull-right" href="{{ route('leads.import') }}"><i class="fa fa-plus-square fa-lg"></i>&nbsp;Import Leads</a>
+                <a class="import-leads-button pull-right" href="#" onclick="exportLeads()"><i class="fa fa-download fa-lg"></i>&nbsp;Export</a>
             </div>
         </div>
         <br>

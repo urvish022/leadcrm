@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\View;
 use Form;
 use App\Traits\UtilTrait;
 use QuickEmailVerification;
+use App\Exports\LeadsExport;
 
 class LeadsController extends AppBaseController
 {
@@ -441,6 +442,12 @@ class LeadsController extends AppBaseController
         } catch (\Exception $e){
             return response()->json(['status'=>false,'message'=>$e->getMessage()]);
         }
+    }
+
+    public function export_leads()
+    {
+        $sheet_name = "leads-export-".now().".xlsx";
+        return Excel::download(new LeadsExport(), $sheet_name);
     }
 
     public function test_email()
