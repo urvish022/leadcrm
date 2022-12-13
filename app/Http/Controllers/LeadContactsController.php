@@ -270,7 +270,7 @@ class LeadContactsController extends AppBaseController
             if($count == 0){
                 $this->leadsRepository->update(['status'=>'invalid'],$lead_id);
             }
-        }
+        } 
 
         return response()->json(['status'=>true]);
     }

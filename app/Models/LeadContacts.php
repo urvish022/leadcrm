@@ -30,7 +30,8 @@ class LeadContacts extends Model
         'email',
         'email_status',
         'phone',
-        'linkedin_profile'
+        'linkedin_profile',
+        'status'
     ];
 
     /**
