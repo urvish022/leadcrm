@@ -43,7 +43,8 @@ class Leads extends Model
         'company_city',
         'company_address',
         'annual_revenue',
-        'keywords'
+        'keywords',
+        'status'
     ];
 
     /**

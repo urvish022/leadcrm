@@ -13,7 +13,6 @@ class LeadsExport implements FromArray
                     "Title","Email Status","First Phone","Corporate Phone","Employees","Industry","Keywords","Company Email",
                     "Company Linkedin Url","Facebook Url","Twitter Url","City","State","Address","Country","Annual Revenue"];
 
-
         $leads = LeadContacts::with(['leads_detail','leads_detail.created_by'])->get();
         
         foreach($leads as $value){
