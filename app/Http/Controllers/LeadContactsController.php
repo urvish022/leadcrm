@@ -260,17 +260,20 @@ class LeadContactsController extends AppBaseController
         $status = $leadContacts->status == 1 ? 0 : 1;
 
         $this->leadContactsRepository->update(['status'=>$status],$id);
-        
-        if($status == 0){
-            $leadContact = $this->leadContactsRepository->find($id);
-            $lead_id = $leadContacts->lead_id;
 
+        $leadContact = $this->leadContactsRepository->find($id);
+        $lead_id = $leadContacts->lead_id;
+
+        if($status == 0){
+            
             $count = $this->leadContactsRepository->getCount(['lead_id'=>$lead_id,'status'=>1]);
 
             if($count == 0){
                 $this->leadsRepository->update(['status'=>'invalid'],$lead_id);
             }
-        } 
+        } else {
+            $this->leadsRepository->update(['status'=>'scrapped'],$lead_id);
+        }
 
         return response()->json(['status'=>true]);
     }
