@@ -325,7 +325,7 @@ function openMailBoxPopup(data)
                 }
 
                 var emailsList = emails.filter((item, 
-                index) => arr.indexOf(item) === index);
+                index) => emails.indexOf(item) === index);
                 
                 $("#emails").val(emailsList.toString());
                 if($("#subject").val() == ""){
