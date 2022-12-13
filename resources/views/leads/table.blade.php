@@ -316,15 +316,18 @@ function openMailBoxPopup(data)
                 $("#subject").val(subject);
 
                 var emails = [];
-                if(data.company_email != ""){
+                if(data.company_email != null){
                     emails.push(data.company_email);
                 }
 
                 for(var i=0;i< data.lead_contacts.length;i++){
                     emails.push(data.lead_contacts[i].email);
                 }
+
+                var emailsList = emails.filter((item, 
+                index) => arr.indexOf(item) === index);
                 
-                $("#emails").val(emails.toString());
+                $("#emails").val(emailsList.toString());
                 if($("#subject").val() == ""){
                     $("#send_mail_btn").attr('disabled',true);
                 } else {
