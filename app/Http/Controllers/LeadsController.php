@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\{CreateLeadsRequest,UpdateLeadsRequest,CreateImportLeadRequest};
-use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository};
+use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository,LeadsActivitiesRepository,LeadsEmailRepository};
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use Flash;
@@ -25,13 +25,19 @@ class LeadsController extends AppBaseController
 {
     use UtilTrait;
     /** @var  LeadsRepository */
-    private $leadsRepository, $leadCategoryRepository, $leadContactsRepository;
+    private $leadsRepository, $leadCategoryRepository, $leadContactsRepository, $leadActivitiesRepository, $leadsEmailRepository;
 
-    public function __construct(LeadsRepository $leadsRepo, LeadCategoryRepository $leadCategoryRepo, LeadContactsRepository $leadContactsRepository)
+    public function __construct(LeadsRepository $leadsRepo, 
+    LeadCategoryRepository $leadCategoryRepo,
+    LeadsActivitiesRepository $leadActivitiesRepository,
+    LeadContactsRepository $leadContactsRepository,
+    LeadsEmailRepository $leadsEmailRepository)
     {
         $this->leadsRepository = $leadsRepo;
         $this->leadCategoryRepository = $leadCategoryRepo;
         $this->leadContactsRepository = $leadContactsRepository;
+        $this->leadActivitiesRepository = $leadActivitiesRepository;
+        $this->leadsEmailRepository = $leadsEmailRepository;
     }
 
     public function import_store(CreateImportLeadRequest $request)
@@ -184,10 +190,7 @@ class LeadsController extends AppBaseController
         $sort_col = $data['order'][0]['column'];
         $sort_field = $data['columns'][$sort_col]['data'];
         
-        $leads = Leads::with(['lead_categories',
-        'lead_contacts'=>function($q){
-            $q->where('status',1);
-        }])
+        $leads = Leads::with(['lead_categories','lead_contacts'])
         ->where('status','!=','invalid')
         ->where('created_by_id',auth()->id());
 
@@ -266,8 +269,7 @@ class LeadsController extends AppBaseController
             return $str;
         })
         ->addColumn('action', function($leads) {
-            $leads->company_name = str_replace("'",'',$leads->company_name);
-            $str = "<a onclick='openMailBoxPopup(".json_encode($leads).")' class='btn btn-ghost-success'><i class='fa fa-envelope'></i></a>";
+            $str = "<a data-id=".$leads->id." data-category-id=".$leads->category_id." data-status=".$leads->status." onclick='openMailBoxPopup(this)' class='btn btn-ghost-success'><i class='fa fa-envelope'></i></a>";
             $str .= "<a href=".route('leads.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
             $str .= "<a href=".route('leads.edit', [$leads->id])." class='btn btn-ghost-info'><i class='fa fa-edit'></i></a>";
             $str .= "<a onclick='changeStatus(".json_encode($leads).")' class='btn btn-ghost-info'><i class='fa fa-tag'></i></a>";
@@ -357,7 +359,7 @@ class LeadsController extends AppBaseController
      * @return Response
      */
     public function update($id, UpdateLeadsRequest $request)
-    {
+    {   
         $leads = $this->leadsRepository->find($id);
 
         if (empty($leads)) {
@@ -401,18 +403,39 @@ class LeadsController extends AppBaseController
 
     public function change_status(Request $request)
     {
-        $input = $request->all();
-        $status = $this->leadsRepository->updateData(['id'=>$input['selected_lead']],['status'=>$input['selected_status'],'reach_type'=>$input['reach_type_select']]);
-        $data = ['status'=>true,'message'=>'Status updated successfully','data'=>$status];
-        return response()->json($data);
+        try{
+            $input = $request->all();
+            $status = $this->leadsRepository->updateData(['id'=>$input['selected_lead']],['status'=>$input['selected_status'],'reach_type'=>$input['reach_type_select']]);
+            
+            $activityData = ['lead_id'=>$input['selected_lead'],'updated_status'=>$input['selected_status'],'reach_type'=>$input['reach_type_select'],'notes'=>$input['notes']];
+            $activityCount = $this->leadActivitiesRepository->getCount($activityData);
+            if($activityCount == 0){
+                $this->leadActivitiesRepository->create($activityData);
+            }
+
+            $data = ['status'=>true,'message'=>'Status updated successfully'];
+            return response()->json($data);
+        }catch(\Exception $e){
+            return response()->json(['status'=>false,'message'=>'Something went wrong '. $e->getMessage()]);
+        }  
     }
 
     public function bulk_change_status(Request $request)
     {
-        $input = $request->all();
-        $status = $this->leadsRepository->updateMassData(['status'=>$input['status']],$input['ids']);
-        $data = ['status'=>true,'message'=>'Status updated successfully'];
-        return response()->json($data);
+        try{
+            $input = $request->all();
+            $status = $this->leadsRepository->updateMassData(['status'=>$input['status']],$input['ids']);
+            
+            foreach($input['ids'] as $id){
+                $activitiesData = ['lead_id'=>$id,'updated_status'=>$input['status'],'reach_type'=>$input['reach'],'notes'=>$input['note']];
+                $this->leadActivitiesRepository->updateOrCreateData($activitiesData);
+            }
+
+            $data = ['status'=>true,'message'=>'Status updated successfully'];
+            return response()->json($data);
+        } catch(\Exception $e){
+            return response()->json(['status'=>false,'message'=>'Something went wrong '. $e->getMessage()]);
+        }
     }
 
     public function send_mail(Request $request)
@@ -438,10 +461,20 @@ class LeadsController extends AppBaseController
                 ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
             });
 
-            return response()->json(['status'=>$status,'message'=>'Mail sent successfully!']);
+            return response()->json(['status'=>true,'message'=>'Mail sent successfully!']);
         } catch (\Exception $e){
-            return response()->json(['status'=>false,'message'=>$e->getMessage()]);
+            return response()->json(['status'=>false,'message'=>"Error! something went wrong ".$e->getMessage()]);
         }
+    }
+
+    public function get_lead_details($id, Request $request)
+    {
+        $input = $request->all();
+        $data = $this->leadsRepository->getDetails($id);
+        $email_template = $this->leadsEmailRepository->getDefaultEmailTemplate($input);
+        $response = ['status'=>true,'data'=>['lead_data'=>$data,'email_template'=>$email_template]];
+
+        return response()->json($response);
     }
 
     public function export_leads()

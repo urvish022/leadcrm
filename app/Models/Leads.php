@@ -20,7 +20,7 @@ class Leads extends Model
 
     public $table = 'leads';
     
-    const status = ['scrapped','lead','followup1','followup2','hold','in','out','invalid'];
+    const status = ['scrapped','initial','followup1','followup2','followup3','followup4','followup5','hold','in','out','invalid'];
 
     const reach_types = ['email','call','facebook','linkedin','other'];
 
@@ -44,7 +44,8 @@ class Leads extends Model
         'company_address',
         'annual_revenue',
         'keywords',
-        'status'
+        'status',
+        'reach_type'
     ];
 
     /**
@@ -90,5 +91,10 @@ class Leads extends Model
     public function created_by()
     {
         return $this->belongsTo(User::class,'created_by_id','id');
+    }
+
+    public function lead_activities()
+    {
+        return $this->hasMany(LeadsActivities::class,'lead_id','id');
     }
 }

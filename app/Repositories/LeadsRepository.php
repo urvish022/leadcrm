@@ -56,19 +56,30 @@ class LeadsRepository extends BaseRepository
     public function getDashboardCounts($authId)
     {
         $scrapped = Leads::where('status','scrapped')->where('created_by_id',$authId)->count();
-        $leads = Leads::where('status','lead')->where('created_by_id',$authId)->count();
+        $initital = Leads::where('status','initital')->where('created_by_id',$authId)->count();
         $followup1 = Leads::where('status','followup1')->where('created_by_id',$authId)->count();
         $followup2 = Leads::where('status','followup2')->where('created_by_id',$authId)->count();
+        $followup3 = Leads::where('status','followup3')->where('created_by_id',$authId)->count();
+        $followup4 = Leads::where('status','followup4')->where('created_by_id',$authId)->count();
+        $followup5 = Leads::where('status','followup5')->where('created_by_id',$authId)->count();
         $hold = Leads::where('status','hold')->where('created_by_id',$authId)->count();
+        $interested = Leads::where('status','interested')->where('created_by_id',$authId)->count();
         $in = Leads::where('status','in')->where('created_by_id',$authId)->count();
         $out = Leads::where('status','out')->where('created_by_id',$authId)->count();
         $invalid = Leads::where('status','invalid')->where('created_by_id',$authId)->count();
 
-        return compact('scrapped','leads','followup1','followup2','in','hold','out','invalid');
+        return compact('scrapped','initital','followup1','followup2','followup3','followup4','followup5','in','hold','interested','out','invalid');
     }
 
     public function updateMassData($updateData,$ids)
     {
         return Leads::whereIn('id',$ids)->update($updateData);
+    }
+
+    public function getDetails($id)
+    {
+        return Leads::with(['lead_contacts'=>function($q){
+            $q->where('status',1);
+        }])->where(['id'=>$id])->first();
     }
 }

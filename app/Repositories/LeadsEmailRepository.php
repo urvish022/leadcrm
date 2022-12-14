@@ -66,12 +66,18 @@ class LeadsEmailRepository extends BaseRepository
     public function getEmailType($type)
     {
         if($type == 'scrapped'){
-            return 'lead';
-        } else if($type == 'lead'){
+            return 'initial';
+        } else if($type == 'initial'){
             return 'followup1';
         } else if($type == 'followup1'){
             return 'followup2';
         } else if($type == 'followup2') {
+            return 'followup3';
+        } else if($type == 'followup3'){
+            return 'followup4';
+        } else if($type == 'followup4'){
+            return 'followup5';
+        } else if($type == 'followup5'){
             return 'thankyou';
         } else if($type == 'out'){
             return 'thankyou';

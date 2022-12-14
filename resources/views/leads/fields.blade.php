@@ -38,7 +38,7 @@
     {!! Form::label('company_origin', 'Company Country:') !!}
     {!! Form::text('company_origin', null, ['class' => 'form-control']) !!}
 </div>
-<div class="form-group col-sm-6" >
+<!-- <div class="form-group col-sm-6" >
     {!! Form::label('status', 'Status:') !!}
     <select class="form-control" name="status" style="width: 100%">
         <option value="">Select</option>
@@ -47,6 +47,15 @@
         @endforeach
     </select>
 </div>
+<div class="form-group col-sm-6" >
+    {!! Form::label('reach_type', 'Reach Type:') !!}
+    <select class="form-control" name="reach_type" style="width: 100%">
+        <option value="">Select</option>
+        @foreach (LeadsModel::getAllReachTypes() as $val)
+            <option value="{{$val}}" @if($leads->reach_type == $val) selected @endif>{{ucfirst($val)}}</option>
+        @endforeach
+    </select>
+</div> -->
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
     {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}

@@ -23,8 +23,8 @@
                     <div class="col-sm-6 col-lg-3">
                         <div class="card text-white bg-primary"> 
                             <div class="card-body pb-0">
-                                <div class="text-value">{{$statistics['leads']}}</div>
-                                <div>Total Leads Count</div>
+                                <div class="text-value">{{$statistics['initital']}}</div>
+                                <div>Total Initial Count</div>
                             </div>
                             <div class="chart-wrapper mt-3 mx-3" style="height:20px;">
                             </div>
@@ -32,7 +32,7 @@
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
-                        <div class="card text-white bg-dark"> 
+                        <div class="card text-white bg-secondary"> 
                             <div class="card-body pb-0">
                                 <div class="text-value">{{$statistics['followup1']}}</div>
                                 <div>Total First Followup Count</div>
@@ -54,10 +54,54 @@
                     </div>
 
                     <div class="col-sm-6 col-lg-3">
+                        <div class="card text-white bg-secondary"> 
+                            <div class="card-body pb-0">
+                                <div class="text-value">{{$statistics['followup3']}}</div>
+                                <div>Total Third Followup Count</div>
+                            </div>
+                            <div class="chart-wrapper mt-3 mx-3" style="height:20px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card text-white bg-secondary"> 
+                            <div class="card-body pb-0">
+                                <div class="text-value">{{$statistics['followup4']}}</div>
+                                <div>Total Fourth Followup Count</div>
+                            </div>
+                            <div class="chart-wrapper mt-3 mx-3" style="height:20px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card text-white bg-secondary"> 
+                            <div class="card-body pb-0">
+                                <div class="text-value">{{$statistics['followup5']}}</div>
+                                <div>Total Fifth Followup Count</div>
+                            </div>
+                            <div class="chart-wrapper mt-3 mx-3" style="height:20px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
                         <div class="card text-white bg-warning"> 
                             <div class="card-body pb-0">
                                 <div class="text-value">{{$statistics['hold']}}</div>
                                 <div>Total Hold Count</div>
+                            </div>
+                            <div class="chart-wrapper mt-3 mx-3" style="height:20px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card text-white bg-teal"> 
+                            <div class="card-body pb-0">
+                                <div class="text-value">{{$statistics['interested']}}</div>
+                                <div>Total Interested Count</div>
                             </div>
                             <div class="chart-wrapper mt-3 mx-3" style="height:20px;">
                             </div>

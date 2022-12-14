@@ -29,6 +29,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('bulk-update-status',[App\Http\Controllers\LeadsController::class,'bulk_change_status'])->name('leads.bulk-update-status');
     Route::post('send-mail',[App\Http\Controllers\LeadsController::class,'send_mail'])->name('leads.send-mail');
     Route::get('export-leads',[App\Http\Controllers\LeadsController::class,'export_leads'])->name('leads.export-leads');
+    Route::post('lead-detail/{id}',[App\Http\Controllers\LeadsController::class,'get_lead_details'])->name('leads.get-leads-details');
     Route::resource('leads', App\Http\Controllers\LeadsController::class);
 
     Route::get('lead-email-templates/create/{id}',[App\Http\Controllers\LeadEmailController::class,'create']);

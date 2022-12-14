@@ -20,7 +20,7 @@ class LeadEmailTemplate extends Model
         'email_type'
     ];
 
-    const EMAIL_TYPES = ['lead','followup1','followup2','thankyou'];
+    const EMAIL_TYPES = ['initial','followup1','followup2','followup3','followup4','followup5','thankyou'];
 
     public static function getEmailTypesOptions()
     {

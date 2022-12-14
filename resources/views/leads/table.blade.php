@@ -16,7 +16,7 @@
 <div class="table-responsive-sm">
     {{$dt_html->table(['class'=>"table table-striped","width"=>"100%"],true)}}
 </div>
-
+<!-- Mail Template Modal -->
 <div class="modal fade bd-example-modal-lg popup" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <!-- Modal content-->
@@ -64,7 +64,7 @@
       
     </div>
 </div>
-
+<!-- Change Bulk Update Status Modal -->
 <div class="modal fade bd-example-modal-lg popup" id="bulkstatusModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -83,6 +83,18 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Select Reach Type: </label>
+                <select class="form-control" name="status" id="bulk_reach_type_select">
+                    @foreach (LeadsModel::getAllReachTypes() as $val)
+                        <option value="{{$val}}">{{ucfirst($val)}}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="notes" class="col-form-label">Notes: </label>
+                <textarea class="form-control" name="bulk_notes" id="bulk_notes"></textarea>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" onclick="bulkupdateStatus()">Submit</button>
@@ -91,7 +103,7 @@
     </div>
     </div>    
 </div>
-
+<!-- Change Status Modal -->
 <div class="modal fade bd-example-modal-lg popup" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -106,7 +118,7 @@
                 <label for="recipient-name" class="col-form-label">Select Status: </label>
                 <input type="hidden" value="{{json_encode(LeadsModel::getAllStatus())}}" id="status_hidden_input">
                 <input type="hidden" name="selected_lead" id="selected_lead">
-                <select class="form-control" name="status" id="status_select">
+                <select class="form-control" name="status_select" id="status_select">
                     @foreach (LeadsModel::getAllStatus() as $val)
                         <option value="{{$val}}">{{ucfirst($val)}}</option>
                     @endforeach
@@ -120,7 +132,10 @@
                     @endforeach
                 </select>
             </div>
-            
+            <div class="form-group">
+                <label for="notes" class="col-form-label">Notes: </label>
+                <textarea class="form-control" name="notes" id="notes"></textarea>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" onclick="updateStatus()">Submit</button>
@@ -129,12 +144,12 @@
     </div>
     </div>    
 </div>
-
+<!-- Filter Modal -->
 <div class="modal fade bd-example-modal-lg popup" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
     <div class="modal-content">
         <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel">Change Status</h4>
+        <h4 class="modal-title" id="exampleModalLabel">Filter</h4>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -165,6 +180,9 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
 <script type="text/javascript">
+$('#myModal').on('hidden.bs.modal', function () {
+    closeMailBoxPopup();
+});
 $("#select_all_leads").click(function(){
     $('input:checkbox').not(this).prop('checked', this.checked);
 
@@ -173,7 +191,6 @@ $("#select_all_leads").click(function(){
     } else {
         $("#bulk_select_section").hide();
     }
-    
 });
 
 $(function(){
@@ -196,7 +213,7 @@ $('#copiq_btn').copiq({
 $('.copy-text').click(function(){
     $("#copied_alert").show();
     setTimeout(function() {
-            $("#copied_alert").hide();
+        $("#copied_alert").hide();
     }, 2000);
 });
 
@@ -209,18 +226,22 @@ function bulkupdateStatus()
 {
     var ids = [];
     var status = $("#bulk_status_select").val();
+    var reachType = $("#bulk_reach_type_select").val();
+    var notes = $("#bulk_notes").val();
 
     $.each($("input[class='lead-checkboxes']:checked"), function(){
         var data = $(this).attr('id').split("-");
         ids.push(data[1]);
     });
-
+    
     $.ajax({
         url: "bulk-update-status",
         dataType: 'json',
         data:{
             'ids': ids,
-            'status': status
+            'status': status,
+            'reach': reachType,
+            'note': notes
         },
         cache: false,
         headers: {
@@ -228,6 +249,12 @@ function bulkupdateStatus()
         },
         type: "POST",
         success: function (res) {
+            if(res.status){
+                successMessage(res.message);
+            } else {
+                errorMessage(res.message);
+            }
+
             $("#bulkstatusModal").modal('hide');
             $('.table-striped').DataTable().ajax.reload();
             $("#bulk_select_section").hide();
@@ -266,17 +293,18 @@ function deleterow(id)
     }
 }
 
-function openMailBoxPopup(data)
+function openMailBoxPopup(obj)
 {
+    const id = $(obj).data('id');
+    const category_id = $(obj).data('category-id');
+    const status = $(obj).data('status');
+
     $("#subject").val("");
     $("#emails").val("");
     $('#trumbowyg-demo').empty();
 
-    const category_id = data.category_id;
-    const status = data.status;
-    
     $.ajax({
-        url: "/lead-email-templates/find-template",
+        url: "/lead-detail/"+id,
         data:{
             'category_id':category_id,
             'email_type':status
@@ -288,15 +316,14 @@ function openMailBoxPopup(data)
         },
         type: "POST",
         success: function (res) {
-            if(data.lead_contacts.length == 0){
-                $("#emails").val("No emails found! all contacts are inactive");
-            }
+            var data = res.data.lead_data;
+            var mail_data = res.data.email_template;
 
-            if(!jQuery.isEmptyObject(res) && data.lead_contacts.length > 0){
+            if(!jQuery.isEmptyObject(res)){
                 var all_keywords = [];
-                var body = res.body;
-                var subject = res.subject;
-                var keywords = res.keywords;
+                var body = mail_data.body;
+                var subject = mail_data.subject;
+                var keywords = mail_data.keywords;
                 all_keywords = keywords.split(", ");
                 for(var i=0;i<all_keywords.length;i++)
                 {
@@ -312,9 +339,6 @@ function openMailBoxPopup(data)
                 body = body.replace(/[{}]/g, "");
                 subject = subject.replace(/[{}]/g, "");
 
-                $('#trumbowyg-demo').trumbowyg('html',body);
-                $("#subject").val(subject);
-
                 var emails = [];
                 if(data.company_email != null){
                     emails.push(data.company_email);
@@ -326,18 +350,39 @@ function openMailBoxPopup(data)
 
                 var emailsList = emails.filter((item, 
                 index) => emails.indexOf(item) === index);
-                
-                $("#emails").val(emailsList.toString());
-                if($("#subject").val() == ""){
+
+                if(emailsList.length == 0){
+                    $("#emails").val("No emails found!");
                     $("#send_mail_btn").attr('disabled',true);
                 } else {
+                    $("#emails").val(emailsList.toString());
+                    $('#trumbowyg-demo').trumbowyg('html',body);
+                    $("#subject").val(subject);
                     $("#send_mail_btn").prop('disabled',false);
                 }
+
             } else {
                 $("#send_mail_btn").attr('disabled',true);
             }
         }
     });
+    
+    // $.ajax({
+    //     url: "/lead-email-templates/find-template",
+    //     data:{
+    //         'category_id':category_id,
+    //         'email_type':status
+    //     },
+    //     dataType: 'json',
+    //     cache: false,
+    //     headers: {
+    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //     },
+    //     type: "POST",
+    //     success: function (res) {
+            
+    //     }
+    // });
 
     $('#myModal').modal('toggle');
     $('#myModal').modal('show');
@@ -367,11 +412,13 @@ function changeStatus(data)
 
     $("#status_select").val(status);
 
-    for(var i=0;i<=to_position;i++){
-        $("#status_select option[value=" + all_status[i] + "]").attr('disabled',true);
-    }
+    // for(var i=0;i<=to_position;i++){
+    //     $("#status_select option[value=" + all_status[i] + "]").attr('disabled',true);
+    // }
 
     $("#selected_lead").val(id);
+    $('#status_select option[value='+status+']').attr('selected','selected');
+
     $("#reach_type_select").val(reach_status);
 }
 
@@ -381,6 +428,7 @@ function updateStatus()
         const selected_lead = $("#selected_lead").val();
         const selected_status = $("#status_select").val();
         const reach_type_select = $("#reach_type_select").val();
+        const notes = $("#notes").val();
 
         $.ajax({
             url: "/leads-change-status",
@@ -388,7 +436,8 @@ function updateStatus()
             data:{
                 'selected_status': selected_status,
                 'selected_lead': selected_lead,
-                'reach_type_select': reach_type_select
+                'reach_type_select': reach_type_select,
+                'notes': notes
             },
             cache: false,
             headers: {
@@ -396,6 +445,11 @@ function updateStatus()
             },
             type: "POST",
             success: function (res) {
+                if(res.status){
+                    successMessage(res.message);
+                } else {
+                    errorMessage(res.message);
+                }
                 
                 $("#statusModal").modal('hide');
                 $('.table-striped').DataTable().ajax.reload();
@@ -438,6 +492,12 @@ function sendMail(){
         },
         type: "POST",
         success: function (res) {
+            if(res.status){
+                successMessage(res.message);
+            } else {
+                errorMessage(res.message);
+            }
+            
             closeMailBoxPopup();
         }
     });
@@ -446,19 +506,6 @@ function sendMail(){
 function exportLeads(){
     window.open("{{route('leads.export-leads')}}");
     return;
-
-    // $.ajax({
-    //     url: "/export-leads",
-    //     dataType: 'json',
-    //     cache: false,
-    //     headers: {
-    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //     },
-    //     type: "POST",
-    //     success: function (res) {
-
-    //     }
-    // });
 }
 </script>
 @endpush
