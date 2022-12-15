@@ -20,6 +20,8 @@ use Form;
 use App\Traits\UtilTrait;
 use QuickEmailVerification;
 use App\Exports\LeadsExport;
+use Session;
+use Config;
 
 class LeadsController extends AppBaseController
 {
@@ -27,7 +29,7 @@ class LeadsController extends AppBaseController
     /** @var  LeadsRepository */
     private $leadsRepository, $leadCategoryRepository, $leadContactsRepository, $leadActivitiesRepository, $leadsEmailRepository;
 
-    public function __construct(LeadsRepository $leadsRepo, 
+    public function __construct(LeadsRepository $leadsRepo,
     LeadCategoryRepository $leadCategoryRepo,
     LeadsActivitiesRepository $leadActivitiesRepository,
     LeadContactsRepository $leadContactsRepository,
@@ -46,7 +48,7 @@ class LeadsController extends AppBaseController
             DB::beginTransaction();
             $filteredData = [];
             $leads_data = Excel::toCollection(collect(),$request->leads_file)->toArray();
-            
+
             foreach($leads_data[0] as $key => $val){
                 if($key != 0 && !is_null($val[1])){
                     $company_name = ucwords($val[0]);
@@ -71,7 +73,7 @@ class LeadsController extends AppBaseController
                     $company_address = $val[19];
                     $country = $val[20];
                     $revenue = $val[21];
-                    
+
                     $leadData = $this->leadsRepository->updateOrCreate(['company_website'=>$company_website],[
                         'created_by_id'=> auth()->id(),
                         'category_id'=> $request->category_id,
@@ -117,7 +119,7 @@ class LeadsController extends AppBaseController
             Flash::error('Something went wrong!');
             return redirect(route('leads.index'));
         }
-        
+
     }
 
     public function getWebsite($website_url)
@@ -129,7 +131,7 @@ class LeadsController extends AppBaseController
     public function import()
     {
         $categories = $this->leadCategoryRepository->all();
-        
+
         return view('leads.create')
             ->with('categories', $categories);
     }
@@ -176,7 +178,7 @@ class LeadsController extends AppBaseController
                                 'searching' => true,
                                 'pageLength'=>50,
                             ]);
-        
+
         return view('leads.index')
             ->with('dt_html',$dt_html);
     }
@@ -189,7 +191,7 @@ class LeadsController extends AppBaseController
         $sort_type = isset($data['order'][0]['dir']) && is_string($data['order'][0]['dir']) ? $data['order'][0]['dir'] : '';
         $sort_col = $data['order'][0]['column'];
         $sort_field = $data['columns'][$sort_col]['data'];
-        
+
         $leads = Leads::with(['lead_categories','lead_contacts'])
         ->where('status','!=','invalid')
         ->where('created_by_id',auth()->id());
@@ -201,7 +203,7 @@ class LeadsController extends AppBaseController
         });
 
         $leads = $leads->when(request('filter'), function ($q){
-            $q->where('status', '=', request('filter'));            
+            $q->where('status', '=', request('filter'));
         });
 
         $leads = $leads->when(empty(request('order')[0]['column']), function($q){
@@ -210,7 +212,7 @@ class LeadsController extends AppBaseController
 
         return DataTables::of($leads)
         ->editColumn('reach_type', function($leads){
-            
+
             if($leads->reach_type == 'email'){
                 return "<i class='fa fa-envelope'></i> ".ucfirst($leads->reach_type);
             } else if($leads->reach_type == 'call') {
@@ -252,7 +254,7 @@ class LeadsController extends AppBaseController
                 $str .= "&nbsp;&nbsp;";
                 $str .= "<a href='$leads->facebook_url' target='_blank'><i class='fa fa-facebook-square'></i></a>";
             }
-            
+
             if(!empty($leads->linkedin_url)){
                 $str .= "&nbsp;&nbsp;";
                 $str .= "<a href='$leads->linkedin_url' target='_blank'><i class='fa fa-linkedin-square'></i></a>";
@@ -359,7 +361,7 @@ class LeadsController extends AppBaseController
      * @return Response
      */
     public function update($id, UpdateLeadsRequest $request)
-    {   
+    {
         $leads = $this->leadsRepository->find($id);
 
         if (empty($leads)) {
@@ -406,7 +408,7 @@ class LeadsController extends AppBaseController
         try{
             $input = $request->all();
             $status = $this->leadsRepository->updateData(['id'=>$input['selected_lead']],['status'=>$input['selected_status'],'reach_type'=>$input['reach_type_select']]);
-            
+
             $activityData = ['lead_id'=>$input['selected_lead'],'updated_status'=>$input['selected_status'],'reach_type'=>$input['reach_type_select'],'notes'=>$input['notes']];
             $activityCount = $this->leadActivitiesRepository->getCount($activityData);
             if($activityCount == 0){
@@ -417,7 +419,7 @@ class LeadsController extends AppBaseController
             return response()->json($data);
         }catch(\Exception $e){
             return response()->json(['status'=>false,'message'=>'Something went wrong '. $e->getMessage()]);
-        }  
+        }
     }
 
     public function bulk_change_status(Request $request)
@@ -425,7 +427,7 @@ class LeadsController extends AppBaseController
         try{
             $input = $request->all();
             $status = $this->leadsRepository->updateMassData(['status'=>$input['status']],$input['ids']);
-            
+
             foreach($input['ids'] as $id){
                 $activitiesData = ['lead_id'=>$id,'updated_status'=>$input['status'],'reach_type'=>$input['reach'],'notes'=>$input['note']];
                 $this->leadActivitiesRepository->updateOrCreateData($activitiesData);
@@ -440,9 +442,22 @@ class LeadsController extends AppBaseController
 
     public function send_mail(Request $request)
     {
+        $user_settings = Session::get('user-settings');
+
+        $email_signature = $user_settings->email_signature;
+
+        Config::set('mail.mailers.smtp.transport',$user_settings->mail_type);
+        Config::set('mail.mailers.smtp.host',$user_settings->mail_host);
+        Config::set('mail.mailers.smtp.port',$user_settings->mail_port);
+        Config::set('mail.mailers.smtp.encryption',$user_settings->mail_encryption);
+        Config::set('mail.mailers.smtp.username',$user_settings->mail_username);
+        Config::set('mail.mailers.smtp.password',$user_settings->mail_password);
+        Config::set('mail.from.address',$user_settings->mail_from_address);
+        Config::set('mail.from.name',$user_settings->mail_from_name);
+
         $body = $request->body;
         $subject = $request->subject;
-        
+
         if(env('APP_ENV') == 'local'){
             $to_emails = ['urvishpatel022@gmail.com'];
         } else {
@@ -451,14 +466,14 @@ class LeadsController extends AppBaseController
         }
 
         try{
-            $body = View::make('email_template.index')->with(['body'=>$body]);
-            
-            $status = Mail::html($body,function($message) use($subject,$to_emails,$body){
+            $body = View::make('email_template.index')->with(compact('body','email_signature'));
+
+            $status = Mail::html($body,function($message) use($subject,$to_emails,$body,$user_settings){
                 $message->to($to_emails)
                 ->subject($subject)
-                ->replyTo(env('MAIL_FROM_ADDRESS'))
-                ->bcc(env('BCC_EMAIL'))
-                ->from(env('MAIL_FROM_ADDRESS'),env('MAIL_FROM_NAME'));
+                ->replyTo(Config::get('mail.from.address'))
+                ->bcc($user_settings->bcc_name)
+                ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
             });
 
             return response()->json(['status'=>true,'message'=>'Mail sent successfully!']);
@@ -515,7 +530,7 @@ class LeadsController extends AppBaseController
                 $response = $quickemailverification->sandbox($email);
             } else {
                 // foreach($emails as $val){
-                //     $response = $quickemailverification->verify($val); 
+                //     $response = $quickemailverification->verify($val);
 
                 //     if(isset($response->body)){
                 //         $status = $response->body['result'] == 'valid' ? true : false;
@@ -524,10 +539,10 @@ class LeadsController extends AppBaseController
                 //     echo $val." - ".$status;
                 //     echo "\n";
                 // }
-                $response = $quickemailverification->verify($email); 
+                $response = $quickemailverification->verify($email);
             }
-            
-            
+
+
         }
         catch (Exception $e) {
             // echo "Code: " . $e->getCode() . " Message: " . $e->getMessage();
@@ -537,9 +552,9 @@ class LeadsController extends AppBaseController
         // $URL = 'https://www.codexworld.com';
 
         // if(isSiteAvailible($URL)){
-        //     echo 'The website is available.';      
+        //     echo 'The website is available.';
         // }else{
-        // echo 'Woops, the site is not found.'; 
+        // echo 'Woops, the site is not found.';
         // }
 
         return $status;
@@ -553,7 +568,7 @@ class LeadsController extends AppBaseController
 
         // Initialize cURL
         $curlInit = curl_init($url);
-        
+
         // Set options
         curl_setopt($curlInit,CURLOPT_CONNECTTIMEOUT,10);
         curl_setopt($curlInit,CURLOPT_HEADER,true);
@@ -562,7 +577,7 @@ class LeadsController extends AppBaseController
 
         // Get response
         $response = curl_exec($curlInit);
-        
+
         // Close a cURL session
         curl_close($curlInit);
 

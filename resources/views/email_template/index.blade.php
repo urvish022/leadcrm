@@ -5,8 +5,7 @@
 </head>
 <body>
     {!! $body !!}
-    <br>
-    @include('email_template.urvish_email_signature')
+    {!! $email_signature !!}
 </body>
 </html>
 

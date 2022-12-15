@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 use App\Repositories\LeadsRepository;
 use Illuminate\Http\Request;
+use App\Models\UserSettings;
+use App\Http\Controllers\AppBaseController;
+use Session;
 
-class HomeController extends Controller
+class HomeController extends AppBaseController
 {
     private $leadsRepo;
     /**
@@ -26,6 +29,10 @@ class HomeController extends Controller
     public function index()
     {
         $authId = auth()->id();
+
+        $userSettings = UserSettings::where('user_id',auth()->id())->first();
+        Session::put('user-settings', $userSettings);
+
         $data = $this->leadsRepo->getDashboardCounts($authId);
         return view('home')->with('statistics',$data);
     }

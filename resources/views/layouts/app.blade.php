@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="{{asset('assets/datatables/jquery.dataTables.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/toastr/toastr.min.css')}}">
     <link rel="stylesheet" href="{{asset('assets/trumbowyg/dist/ui/trumbowyg.min.css')}}">
-    
+    <x-head.tinymce-config/>
 @stack('styles')
 </head>
 <body class="app header-fixed sidebar-fixed aside-menu-fixed sidebar-lg-show">

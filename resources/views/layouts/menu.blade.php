@@ -28,3 +28,9 @@
         <span>Lead Email Templates</span>
     </a>
 </li>
+<li class="nav-item {{ Request::is('settings*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('settings.index') }}">
+        <i class="fa fa-gear"></i>
+        <span>Settings</span>
+    </a>
+</li>
