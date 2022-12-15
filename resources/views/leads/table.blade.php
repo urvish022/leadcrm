@@ -22,7 +22,7 @@
       <!-- Modal content-->
       <div class="modal-content">
         <div class="modal-header">
-        <h4 class="modal-title" id="exampleModalLabel">Mail Template</h4>
+        <h4 class="modal-title" id="exampleModalLabel">Mail</h4>
           <button type="button" class="close" onclick="closeMailBoxPopup()" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -61,7 +61,7 @@
           <button type="button" class="btn btn-default" onclick="closeMailBoxPopup()">Close</button>
         </div>
       </div>
-      
+
     </div>
 </div>
 <!-- Change Bulk Update Status Modal -->
@@ -101,7 +101,7 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
     </div>
-    </div>    
+    </div>
 </div>
 <!-- Change Status Modal -->
 <div class="modal fade bd-example-modal-lg popup" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -142,7 +142,7 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
     </div>
-    </div>    
+    </div>
 </div>
 <!-- Filter Modal -->
 <div class="modal fade bd-example-modal-lg popup" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -170,7 +170,35 @@
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         </div>
     </div>
-    </div>    
+    </div>
+</div>
+<!-- Scheduled Modal -->
+<div class="modal fade bd-example-modal-lg popup" id="scheduleEmailModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title" id="exampleModalLabel">Schedule Email</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Select Date: </label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                    <input type="text" class="form-control datetimepicker" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="saveSchedule()">Submit</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+    </div>
+    </div>
 </div>
 
 @push('scripts')
@@ -178,7 +206,6 @@
 @endpush
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/clipboard.js/1.5.12/clipboard.min.js"></script>
 <script type="text/javascript">
 $('#myModal').on('hidden.bs.modal', function () {
     closeMailBoxPopup();
@@ -233,7 +260,7 @@ function bulkupdateStatus()
         var data = $(this).attr('id').split("-");
         ids.push(data[1]);
     });
-    
+
     $.ajax({
         url: "bulk-update-status",
         dataType: 'json',
@@ -272,7 +299,7 @@ function checkboxselect()
 }
 
 function deleterow(id)
-{    
+{
     if(confirm('Are you sure? Do you want to delete this entry?')){
         $.ajax({
             url: "/leads/"+id,
@@ -348,7 +375,7 @@ function openMailBoxPopup(obj)
                     emails.push(data.lead_contacts[i].email);
                 }
 
-                var emailsList = emails.filter((item, 
+                var emailsList = emails.filter((item,
                 index) => emails.indexOf(item) === index);
 
                 if(emailsList.length == 0){
@@ -366,23 +393,6 @@ function openMailBoxPopup(obj)
             }
         }
     });
-    
-    // $.ajax({
-    //     url: "/lead-email-templates/find-template",
-    //     data:{
-    //         'category_id':category_id,
-    //         'email_type':status
-    //     },
-    //     dataType: 'json',
-    //     cache: false,
-    //     headers: {
-    //         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //     },
-    //     type: "POST",
-    //     success: function (res) {
-            
-    //     }
-    // });
 
     $('#myModal').modal('toggle');
     $('#myModal').modal('show');
@@ -404,17 +414,13 @@ function changeStatus(data)
     const id = data.id;
     const reach_status = data.reach_type;
     var all_status = JSON.parse($("#status_hidden_input").val());
-    
+
     var to_position = all_status.indexOf(status);
-    
+
     $("#statusModal").modal('toggle');
     $("#statusModal").modal('show');
 
     $("#status_select").val(status);
-
-    // for(var i=0;i<=to_position;i++){
-    //     $("#status_select option[value=" + all_status[i] + "]").attr('disabled',true);
-    // }
 
     $("#selected_lead").val(id);
     $('#status_select option[value='+status+']').attr('selected','selected');
@@ -450,7 +456,7 @@ function updateStatus()
                 } else {
                     errorMessage(res.message);
                 }
-                
+
                 $("#statusModal").modal('hide');
                 $('.table-striped').DataTable().ajax.reload();
             }
@@ -472,8 +478,8 @@ function filterStatus()
     $('.table-striped').DataTable().ajax.reload()
 }
 
-function sendMail(){
-
+function sendMail()
+{
     var emails = $("#emails").val();
     var subject = $("#subject").val();
     var body = $("#trumbowyg-demo").html();
@@ -497,7 +503,7 @@ function sendMail(){
             } else {
                 errorMessage(res.message);
             }
-            
+
             closeMailBoxPopup();
         }
     });
@@ -506,6 +512,12 @@ function sendMail(){
 function exportLeads(){
     window.open("{{route('leads.export-leads')}}");
     return;
+}
+
+function scheduleEmail()
+{
+    $("#scheduleEmailModal").modal('toggle');
+    $("#scheduleEmailModal").modal('show');
 }
 </script>
 @endpush

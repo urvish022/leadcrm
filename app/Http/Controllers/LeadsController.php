@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\{CreateLeadsRequest,UpdateLeadsRequest,CreateImportLeadRequest};
-use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository,LeadsActivitiesRepository,LeadsEmailRepository};
+use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository,LeadsActivitiesRepository,LeadsEmailRepository,EmailHistoryRepository};
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use Flash;
@@ -27,12 +27,13 @@ class LeadsController extends AppBaseController
 {
     use UtilTrait;
     /** @var  LeadsRepository */
-    private $leadsRepository, $leadCategoryRepository, $leadContactsRepository, $leadActivitiesRepository, $leadsEmailRepository;
+    private $leadsRepository, $leadCategoryRepository, $leadContactsRepository, $leadActivitiesRepository, $leadsEmailRepository, $emailHistoryRepository;
 
     public function __construct(LeadsRepository $leadsRepo,
     LeadCategoryRepository $leadCategoryRepo,
     LeadsActivitiesRepository $leadActivitiesRepository,
     LeadContactsRepository $leadContactsRepository,
+    EmailHistoryRepository $emailHistoryRepository,
     LeadsEmailRepository $leadsEmailRepository)
     {
         $this->leadsRepository = $leadsRepo;
@@ -40,6 +41,7 @@ class LeadsController extends AppBaseController
         $this->leadContactsRepository = $leadContactsRepository;
         $this->leadActivitiesRepository = $leadActivitiesRepository;
         $this->leadsEmailRepository = $leadsEmailRepository;
+        $this->emailHistoryRepository = $emailHistoryRepository;
     }
 
     public function import_store(CreateImportLeadRequest $request)
@@ -150,7 +152,7 @@ class LeadsController extends AppBaseController
                 'width'          => '10px'
             ],
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => trans('Sr. No'), 'render' => null, 'orderable' => false, 'searchable' => false],
-            ['data' => 'category', 'name' => 'category_name', 'title' => "Lead Category",'orderable' => false, 'searchable' => false],
+            ['data' => 'category', 'name' => 'category_name', 'title' => "Niche Category",'orderable' => false, 'searchable' => false],
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company"],
             ['data' => 'company_phone_number', 'name' => 'company_phone_number', 'title' => "Phone"],
             ['data' => 'company_details', 'name' => 'company_details', 'title' => "Details",'orderable' => false, 'searchable' => false],
@@ -502,24 +504,6 @@ class LeadsController extends AppBaseController
     {
         $status = false;
         $email = "chuckm@briteblinds.ca";
-        // $emails = [
-        //     "tammy@domenicksblinds.com",
-        //     "chuckm@briteblinds.ca", "ginae@briteblinds.ca",
-        //     "donna.currier@rockwoodshutters.com", "hello@emailrockwood.com",
-        //     "annette@elizabethshutters.com", "info@elizabethshutters.com",
-        //     "kevin@privacyglasssolutions.com", "info@privacyglasssolutions.com",
-        //     "avergara@newhorizonshutters.com", "info@newhorizonshutters.com",
-        //     "lucas.polka@anionblinds.com", "anion@anionblinds.com", "anionjp@sbcglobal.net",
-        //     "tomjr@floridashuttersinc.com", "tomjr@floridashuttersinc.com",
-        //     "phil@blindsdesigns.com","rob@blindsdesigns.com","kim@blindsdesigns.com", "robert@blindsdesigns.com",
-        //     "polsters@blindsofallkinds.com", "wj@blindsofallkinds.com",
-        //     "dusevic@mastercraftshuttersandblinds.com", "sales@mastercraftshuttersandblinds.com",
-        //     "amir@primeshuttersllc.com", "info@primeshuttersllc.com",
-        //     "info@colemansfw.com",
-        //     "rob@acadiashutters.com","info@acadiashutters.com","wil@acadiashutters.com","info@acadiashutters.com",
-        //     "cindyc@abetterblind.com", "info@abetterblind.com",
-        //     "amyg@shenandoahshutters.com", "info@shenandoahshutters.com"
-        // ];
 
         $client   = new QuickEmailVerification\Client(env("QUICKEMAIL_API_KEY"));
         $quickemailverification  = $client->quickemailverification();
@@ -529,33 +513,12 @@ class LeadsController extends AppBaseController
             if(env('APP_ENV') == 'local'){
                 $response = $quickemailverification->sandbox($email);
             } else {
-                // foreach($emails as $val){
-                //     $response = $quickemailverification->verify($val);
-
-                //     if(isset($response->body)){
-                //         $status = $response->body['result'] == 'valid' ? true : false;
-                //     }
-
-                //     echo $val." - ".$status;
-                //     echo "\n";
-                // }
                 $response = $quickemailverification->verify($email);
             }
-
-
         }
         catch (Exception $e) {
-            // echo "Code: " . $e->getCode() . " Message: " . $e->getMessage();
             $status = false;
         }
-
-        // $URL = 'https://www.codexworld.com';
-
-        // if(isSiteAvailible($URL)){
-        //     echo 'The website is available.';
-        // }else{
-        // echo 'Woops, the site is not found.';
-        // }
 
         return $status;
     }

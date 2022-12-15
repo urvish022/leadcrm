@@ -59,7 +59,7 @@ class LeadContactsController extends AppBaseController
                                 'pageLength'=>100,
                                 'searching' => true,
                             ]);
-        
+
         return view('lead_contacts.index')
             ->with('dt_html',$dt_html);
     }
@@ -72,11 +72,11 @@ class LeadContactsController extends AppBaseController
         $sort_type = isset($data['order'][0]['dir']) && is_string($data['order'][0]['dir']) ? $data['order'][0]['dir'] : '';
         $sort_col = $data['order'][0]['column'];
         $sort_field = $data['columns'][$sort_col]['data'];
-        
+
         $leads = LeadContacts::whereHas('leads_detail',function($q){
             $q->where('created_by_id',auth()->id());
         });
-        
+
         $leads->when(request('search')['value'], function ($q){
             return $q->where('first_name', 'LIKE', '%' . request('search')['value'] . '%')
             ->orWhere('last_name', 'LIKE', '%' . request('search')['value'] . '%')
@@ -91,7 +91,7 @@ class LeadContactsController extends AppBaseController
         return DataTables::of($leads)
         ->editColumn('company_name', function($leads){
             if(isset($leads->leads_detail)){
-                return "<a href=".route('leads.show',[$leads->lead_id]).">".$leads->leads_detail->company_name."</a>";
+                return "<a target='_blank' href=".route('leads.show',[$leads->lead_id]).">".$leads->leads_detail->company_name."</a>";
             } else {
                 return "";
             }
@@ -123,7 +123,7 @@ class LeadContactsController extends AppBaseController
             return $str;
         })
         ->addColumn('action', function($leads) {
-            
+
             $str = "<a href=".route('lead-contacts.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
             $str .= "<a href=".route('lead-contacts.edit', [$leads->id])." class='btn btn-ghost-info'><i class='fa fa-edit'></i></a>";
             $str .= Form::open(['route' => ['lead-contacts.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
@@ -158,7 +158,7 @@ class LeadContactsController extends AppBaseController
 
         $leadContacts = $this->leadContactsRepository->create($input);
 
-        Flash::success('Lead Contacts saved successfully.');
+        Flash::success('Contacts saved successfully.');
 
         return redirect(route('lead-contacts.index'));
     }
@@ -175,7 +175,7 @@ class LeadContactsController extends AppBaseController
         $leadContacts = $this->leadContactsRepository->find($id);
 
         if (empty($leadContacts)) {
-            Flash::error('Lead Contacts not found');
+            Flash::error('Contacts not found');
 
             return redirect(route('lead-contacts.index'));
         }
@@ -195,7 +195,7 @@ class LeadContactsController extends AppBaseController
         $leadContacts = $this->leadContactsRepository->find($id);
 
         if (empty($leadContacts)) {
-            Flash::error('Lead Contacts not found');
+            Flash::error('Contacts not found');
 
             return redirect(route('lead-contacts.index'));
         }
@@ -216,14 +216,14 @@ class LeadContactsController extends AppBaseController
         $leadContacts = $this->leadContactsRepository->find($id);
 
         if (empty($leadContacts)) {
-            Flash::error('Lead Contacts not found');
+            Flash::error('Contacts not found');
 
             return redirect(route('lead-contacts.index'));
         }
 
         $leadContacts = $this->leadContactsRepository->update($request->all(), $id);
 
-        Flash::success('Lead Contacts updated successfully.');
+        Flash::success('Contacts updated successfully.');
 
         return redirect(route('lead-contacts.index'));
     }
@@ -242,14 +242,14 @@ class LeadContactsController extends AppBaseController
         $leadContacts = $this->leadContactsRepository->find($id);
 
         if (empty($leadContacts)) {
-            Flash::error('Lead Contacts not found');
+            Flash::error('Contacts not found');
 
             return redirect(route('lead-contacts.index'));
         }
 
         $this->leadContactsRepository->delete($id);
 
-        Flash::success('Lead Contacts deleted successfully.');
+        Flash::success('Contacts deleted successfully.');
 
         return redirect(route('lead-contacts.index'));
     }

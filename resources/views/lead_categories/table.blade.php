@@ -2,8 +2,8 @@
     <table class="table table-striped" id="lead-category-table">
         <thead>
             <tr>
-                <th>Lead Category</th>
-                <th>Lead Count</th>
+                <th>Niche Category</th>
+                <th>Total</th>
                 <th colspan="3">Action</th>
             </tr>
         </thead>

@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
           <li class="breadcrumb-item">
-             <a href="{!! route('lead-email-templates.index') !!}">Lead Email Templates</a>
+             <a href="{!! route('lead-email-templates.index') !!}">Email Templates</a>
           </li>
           <li class="breadcrumb-item active">Edit</li>
         </ol>
@@ -15,7 +15,7 @@
                       <div class="card">
                           <div class="card-header">
                               <i class="fa fa-edit fa-lg"></i>
-                              <strong>Edit Lead Email Templates</strong>
+                              <strong>Edit Email Templates</strong>
                           </div>
                           <div class="card-body">
                               {!! Form::model($leadContacts, ['route' => ['lead-email-templates.update', $leadContacts->id], 'method' => 'patch']) !!}

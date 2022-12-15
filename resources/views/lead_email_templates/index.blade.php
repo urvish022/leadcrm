@@ -2,7 +2,7 @@
 
 @section('content')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">Lead Email Templates</li>
+        <li class="breadcrumb-item">Email Templates</li>
     </ol>
     <div class="container-fluid">
         <div class="animated fadeIn">
@@ -12,12 +12,12 @@
                      <div class="card">
                          <div class="card-header">
                              <i class="fa fa-align-justify"></i>
-                             Lead Email Templates
+                             Email Templates
                          </div>
                          <div class="card-body">
                              @include('lead_email_templates.table')
                               <div class="pull-right mr-3">
-                                     
+
                               </div>
                          </div>
                      </div>

@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-         <a href="{!! route('lead-email-templates.index') !!}">Lead Email Templates</a>
+         <a href="{!! route('lead-email-templates.index') !!}">Email Templates</a>
       </li>
       <li class="breadcrumb-item active">Create</li>
     </ol>
@@ -15,7 +15,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <i class="fa fa-plus-square-o fa-lg"></i>
-                                <strong>Create Lead Email Templates</strong>
+                                <strong>Create Email Templates</strong>
                             </div>
                             <div class="card-body">
                                 {!! Form::open(['route' => 'lead-email-templates.store']) !!}

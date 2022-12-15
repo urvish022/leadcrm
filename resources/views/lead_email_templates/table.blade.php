@@ -2,7 +2,7 @@
     <table class="table table-striped" id="lead-category-table">
         <thead>
             <tr>
-                <th>Lead Category</th>
+                <th>Niche Category</th>
                 <th>Title</th>
                 <th>Subject</th>
                 <th>Keywords</th>
@@ -34,7 +34,7 @@
                         </div>
                         {!! Form::close() !!}
                     </td>
-                </tr>    
+                </tr>
             @endforeach
         </tbody>
     </table>

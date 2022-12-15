@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-         <a href="{!! route('leads.index') !!}">Leads</a>
+         <a href="{!! route('leads.index') !!}">Companies</a>
       </li>
       <li class="breadcrumb-item active">Create</li>
     </ol>
@@ -15,7 +15,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <i class="fa fa-plus-square-o fa-lg"></i>
-                                <strong>Create Leads</strong>
+                                <strong>Create Company</strong>
                             </div>
                             <div class="card-body">
                                 @if(request()->route()->getName() == 'leads.import')
@@ -27,7 +27,7 @@
                                    @include('leads.fields')
                                 {!! Form::close() !!}
                                 @endif
-                                
+
                             </div>
                         </div>
                     </div>

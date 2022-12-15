@@ -23,15 +23,15 @@
 @endpush
 @section('content')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">Leads</li>
-        
+        <li class="breadcrumb-item">Companies</li>
+
     </ol>
     <div class="container-fluid">
-        
+
         <div class="row">
             <div class="col-lg-12">
                 <a class="filter-button pull-right" href="#" onclick="filterPopup()"><i class="fa fa-filter fa-lg"></i>&nbsp;Filter</a>
-                <a class="import-leads-button pull-right" href="{{ route('leads.import') }}"><i class="fa fa-plus-square fa-lg"></i>&nbsp;Import Leads</a>
+                <a class="import-leads-button pull-right" href="{{ route('leads.import') }}"><i class="fa fa-plus-square fa-lg"></i>&nbsp;Import Companies</a>
                 <a class="import-leads-button pull-right" href="#" onclick="exportLeads()"><i class="fa fa-download fa-lg"></i>&nbsp;Export</a>
             </div>
         </div>
@@ -43,6 +43,9 @@
                 </div>
                 <div>
                     <button type="button" class="btn btn-warning pull-right" onclick="openBulkStatusPopup()"><i class="fa fa-tag fa-lg"></i>&nbsp;Change Status</button>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-success pull-right" onclick="scheduleEmail()"><i class="fa fa-rocket fa-lg"></i>&nbsp;Schedule</button>
                 </div>
             </div>
         </div>
@@ -56,7 +59,7 @@
                      <div class="card">
                          <div class="card-header">
                              <i class="fa fa-align-justify"></i>
-                             Leads
+                             Companies
                              <!-- <a class="pull-right" href="{{ route('leads.create') }}"><i class="fa fa-plus-square fa-lg"></i></a> -->
                          </div>
                          <div class="card-body">

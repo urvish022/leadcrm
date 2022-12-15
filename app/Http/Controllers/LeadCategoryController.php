@@ -27,7 +27,7 @@ class LeadCategoryController extends AppBaseController
     public function index()
     {
         $leadCategories = $this->leadCategoryRepository->getCountWithLeads();
-        
+
         return view('lead_categories.index')
             ->with('leadCategories', $leadCategories);
     }
@@ -54,7 +54,7 @@ class LeadCategoryController extends AppBaseController
 
         $leadCategory = $this->leadCategoryRepository->create($input);
 
-        Flash::success('Lead Category saved successfully.');
+        Flash::success('Niche Category saved successfully.');
 
         return redirect(route('lead-category.index'));
     }
@@ -68,7 +68,7 @@ class LeadCategoryController extends AppBaseController
     public function show($id)
     {
         $leadCategory = $this->leadCategoryRepository->find($id);
-        
+
         if (empty($leadCategory)) {
             Flash::error('Category not found');
 

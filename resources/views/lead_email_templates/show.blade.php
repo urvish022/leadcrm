@@ -2,10 +2,10 @@
 
 @section('content')
      <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a href="{{ route('lead-email-templates.index') }}">Lead Email Templates</a>
-            </li>
-            <li class="breadcrumb-item active">Detail</li>
+        <li class="breadcrumb-item">
+            <a href="{{ route('lead-email-templates.index') }}">Email Templates</a>
+        </li>
+        <li class="breadcrumb-item active">Detail</li>
      </ol>
      <div class="container-fluid">
           <div class="animated fadeIn">

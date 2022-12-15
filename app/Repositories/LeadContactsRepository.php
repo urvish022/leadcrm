@@ -17,7 +17,7 @@ class LeadContactsRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        
+
     ];
 
     /**
@@ -33,13 +33,11 @@ class LeadContactsRepository extends BaseRepository
     /**
      * Configure the Model
      **/
-    public function model()
-    {
+    public function model(){
         return LeadContacts::class;
     }
 
-    public function updateOrCreate($checkData, $insertData)
-    {
+    public function updateOrCreate($checkData, $insertData){
         return LeadContacts::updateOrCreate($checkData,$insertData);
     }
 
