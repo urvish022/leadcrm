@@ -30,6 +30,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('send-mail',[App\Http\Controllers\LeadsController::class,'send_mail'])->name('leads.send-mail');
     Route::get('export-leads',[App\Http\Controllers\LeadsController::class,'export_leads'])->name('leads.export-leads');
     Route::post('lead-detail/{id}',[App\Http\Controllers\LeadsController::class,'get_lead_details'])->name('leads.get-leads-details');
+    Route::post('save-schedule',[App\Http\Controllers\LeadsController::class,'save_schedule'])->name('leads.save-schedule');
     Route::resource('leads', App\Http\Controllers\LeadsController::class);
 
     Route::get('lead-email-templates/create/{id}',[App\Http\Controllers\LeadEmailController::class,'create']);

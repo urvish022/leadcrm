@@ -484,6 +484,22 @@ class LeadsController extends AppBaseController
         }
     }
 
+    public function save_schedule(Request $request)
+    {
+        try{
+            $inputs = $request->all();
+            $leads = $this->leadsRepository->getWhereInData($inputs['companies']);
+            foreach($leads as $lead){
+                $date = $this->convertToUTC($inputs['date'], $lead->company_origin);
+                dump($lead->company_origin." : ".$date);
+            }
+            return response()->json(['status'=>true,'message'=>'Mail scheduled successfully!']);
+        } catch (\Exception $e){
+            return $e;
+            return response()->json(['status'=>false,'message'=>"Error! something went wrong ".$e->getMessage()]);
+        }
+    }
+
     public function get_lead_details($id, Request $request)
     {
         $input = $request->all();

@@ -189,7 +189,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                     </div>
-                    <input type="text" class="form-control datetimepicker" />
+                    <input type="text" id="schedule_date" class="form-control datetimepicker" />
                 </div>
             </div>
         </div>
@@ -518,6 +518,49 @@ function scheduleEmail()
 {
     $("#scheduleEmailModal").modal('toggle');
     $("#scheduleEmailModal").modal('show');
+}
+
+function closeScheduleEmailPopup()
+{
+    $("#scheduleEmailModal").modal('hide');
+    $('.table-striped').DataTable().ajax.reload();
+}
+
+function saveSchedule()
+{
+    if($("#schedule_date").val() != ""){
+
+        var ids = [];
+        $.each($("input[class='lead-checkboxes']:checked"), function(){
+            var data = $(this).attr('id').split("-");
+            ids.push(data[1]);
+        });
+
+        $.ajax({
+            url: "/save-schedule",
+            dataType: 'json',
+            data:{
+                'date': $("#schedule_date").val(),
+                'companies': ids
+            },
+            cache: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: "POST",
+            success: function (res) {
+                if(res.status){
+                    successMessage(res.message);
+                } else {
+                    errorMessage(res.message);
+                }
+
+                closeScheduleEmailPopup();
+            }
+        });
+    } else {
+        alert('Please select schedule time!');
+    }
 }
 </script>
 @endpush

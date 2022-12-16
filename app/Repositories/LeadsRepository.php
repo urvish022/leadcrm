@@ -17,7 +17,7 @@ class LeadsRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        
+
     ];
 
     /**
@@ -42,7 +42,7 @@ class LeadsRepository extends BaseRepository
     {
         return Leads::updateOrCreate($checkData,$inserData);
     }
-    
+
     public function show($id)
     {
         return Leads::with('lead_contacts','lead_categories','created_by')->find($id);
@@ -74,6 +74,11 @@ class LeadsRepository extends BaseRepository
     public function updateMassData($updateData,$ids)
     {
         return Leads::whereIn('id',$ids)->update($updateData);
+    }
+
+    public function getWhereInData($ids)
+    {
+        return Leads::whereIn('id',$ids)->get();
     }
 
     public function getDetails($id)
