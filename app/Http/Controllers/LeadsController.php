@@ -6,22 +6,22 @@ use App\Http\Requests\{CreateLeadsRequest,UpdateLeadsRequest,CreateImportLeadReq
 use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository,LeadsActivitiesRepository,LeadsEmailRepository,EmailHistoryRepository};
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
+use App\Imports\LeadsImport;
+use App\Models\Leads;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
+use App\Traits\UtilTrait;
+use App\Exports\LeadsExport;
+use QuickEmailVerification;
+use Session;
+use Config;
 use Flash;
 use Response;
 use Excel;
 use DB;
 use Datatables;
 use HtmlBuilder;
-use App\Imports\LeadsImport;
-use App\Models\Leads;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\View;
 use Form;
-use App\Traits\UtilTrait;
-use QuickEmailVerification;
-use App\Exports\LeadsExport;
-use Session;
-use Config;
 
 class LeadsController extends AppBaseController
 {

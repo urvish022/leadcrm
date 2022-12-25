@@ -47,3 +47,4 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('sample-mail',[App\Http\Controllers\LeadsController::class,'test_email']);
+
