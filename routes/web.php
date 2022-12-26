@@ -44,7 +44,9 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('settings',[App\Http\Controllers\SettingsController::class,'index'])->name('settings.index');
     Route::patch('settings-update/{id}',[App\Http\Controllers\SettingsController::class,'update'])->name('settings.update');
+
+    Route::post('ai/search-openai-content',[App\Http\Controllers\AIController::class,'searchOpenAI'])->name('ai.search');
+    Route::resource('ai', App\Http\Controllers\AIController::class);
 });
 
 Route::get('sample-mail',[App\Http\Controllers\LeadsController::class,'test_email']);
-

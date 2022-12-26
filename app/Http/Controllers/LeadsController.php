@@ -495,7 +495,6 @@ class LeadsController extends AppBaseController
             }
             return response()->json(['status'=>true,'message'=>'Mail scheduled successfully!']);
         } catch (\Exception $e){
-            return $e;
             return response()->json(['status'=>false,'message'=>"Error! something went wrong ".$e->getMessage()]);
         }
     }

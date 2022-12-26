@@ -22,6 +22,12 @@
         <span>Contacts</span>
     </a>
 </li>
+<li class="nav-item {{ Request::is('ai*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('ai.index') }}">
+        <i class="fa fa-search"></i>&nbsp;
+        <span>AI Notes</span>
+    </a>
+</li>
 <li class="nav-item {{ Request::is('lead-email-templates*') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('lead-email-templates.index') }}">
         <i class="fa fa-envelope"></i>&nbsp;
