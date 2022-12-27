@@ -78,7 +78,7 @@ class LeadsRepository extends BaseRepository
 
     public function getWhereInData($ids)
     {
-        return Leads::whereIn('id',$ids)->get();
+        return Leads::with('lead_contacts')->whereIn('id',$ids)->get();
     }
 
     public function getDetails($id)

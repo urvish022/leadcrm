@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\{CreateLeadsRequest,UpdateLeadsRequest,CreateImportLeadRequest};
-use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository,LeadsActivitiesRepository,LeadsEmailRepository,EmailHistoryRepository};
+use App\Repositories\{LeadCategoryRepository,LeadsRepository,LeadContactsRepository,LeadsActivitiesRepository,LeadsEmailRepository,EmailHistoryRepository,EmailScheduleRepository};
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use App\Imports\LeadsImport;
@@ -34,6 +34,7 @@ class LeadsController extends AppBaseController
     LeadsActivitiesRepository $leadActivitiesRepository,
     LeadContactsRepository $leadContactsRepository,
     EmailHistoryRepository $emailHistoryRepository,
+    EmailScheduleRepository $emailScheduleRepository,
     LeadsEmailRepository $leadsEmailRepository)
     {
         $this->leadsRepository = $leadsRepo;
@@ -42,6 +43,7 @@ class LeadsController extends AppBaseController
         $this->leadActivitiesRepository = $leadActivitiesRepository;
         $this->leadsEmailRepository = $leadsEmailRepository;
         $this->emailHistoryRepository = $emailHistoryRepository;
+        $this->emailScheduleRepository = $emailScheduleRepository;
     }
 
     public function import_store(CreateImportLeadRequest $request)
@@ -491,7 +493,56 @@ class LeadsController extends AppBaseController
             $leads = $this->leadsRepository->getWhereInData($inputs['companies']);
             foreach($leads as $lead){
                 $date = $this->convertToUTC($inputs['date'], $lead->company_origin);
-                dump($lead->company_origin." : ".$date);
+
+                $emailData = $this->leadsEmailRepository->getDefaultEmailTemplate(['email_type'=>$lead['status'],'category_id'=>$lead['category_id']]);
+                if(!empty($emailData)){
+                    $keywords = explode(", ",$emailData['keywords']);
+                    $body = $emailData['body'];
+                    $subject = $emailData['subject'];
+                    for($i=0;$i<count($keywords);$i++)
+                    {
+                        $subject = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$subject);
+
+                        $subject = str_replace("{","",$subject);
+                        $subject = str_replace("}","",$subject);
+
+                        $body = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$body);
+
+                        if($keywords[$i] == "website"){
+                            $body = preg_replace("http://www.website.com/","http://"+$lead->{$keywords[$i]},$body);
+                        }
+
+                        $body = str_replace("{","",$body);
+                        $body = str_replace("}","",$body);
+
+                        $emails = [];
+
+                        if(!empty($lead->company_email)){
+                            $emails[] = $lead->company_email;
+                        }
+                        $contacts = $lead->lead_contacts->toArray();
+                        $contact_emails = array_column($contacts,'email');
+                        foreach($contact_emails as $email){
+                            $emails[] = $email;
+                        }
+
+                        $emails = implode(",",$emails);
+                    }
+
+                    $scheduleData = [
+                            'lead_id'=>$lead['category_id'],
+                            'emails'=>$emails,
+                            'schedule_time' => $date,
+                            'subject'=>$subject,
+                            'body'=>$body,
+                            'status'=>$emailData['email_type']
+                        ];
+
+                    $this->emailScheduleRepository->create($scheduleData);
+                }
+
+
+
             }
             return response()->json(['status'=>true,'message'=>'Mail scheduled successfully!']);
         } catch (\Exception $e){

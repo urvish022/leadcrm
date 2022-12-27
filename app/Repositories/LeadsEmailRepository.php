@@ -17,7 +17,7 @@ class LeadsEmailRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        
+
     ];
 
     /**
@@ -42,7 +42,7 @@ class LeadsEmailRepository extends BaseRepository
     {
         return LeadEmailTemplate::updateOrCreate($checkData,$inserData);
     }
-    
+
     public function show($id)
     {
         return LeadEmailTemplate::with('lead_contacts','lead_categories','created_by')->find($id);
@@ -56,7 +56,7 @@ class LeadsEmailRepository extends BaseRepository
     public function getDefaultEmailTemplate($data)
     {
         $email_type = $this->getEmailType($data['email_type']);
-        
+
         return LeadEmailTemplate::where('category_id',$data['category_id'])
         ->where('email_type',$email_type)
         ->where('default_status',1)
