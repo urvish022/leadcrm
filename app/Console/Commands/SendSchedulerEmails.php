@@ -39,7 +39,7 @@ class SendSchedulerEmails extends Command
      */
     public function handle()
     {
-        EmailScheduleRepository::where('')
+        // EmailScheduleRepository::where('')
         return 0;
     }
 }
