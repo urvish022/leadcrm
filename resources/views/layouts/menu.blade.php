@@ -22,6 +22,12 @@
         <span>Contacts</span>
     </a>
 </li>
+<li class="nav-item {{ Request::is('scheduler*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('scheduler.index') }}">
+        <i class="fa fa-calendar"></i>&nbsp;
+        <span>Scheduler</span>
+    </a>
+</li>
 <li class="nav-item {{ Request::is('ai*') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('ai.index') }}">
         <i class="fa fa-search"></i>&nbsp;

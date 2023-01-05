@@ -42,6 +42,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('lead-contacts-list', [App\Http\Controllers\LeadContactsController::class,'list'])->name('lead-contacts.list');
     Route::resource('lead-contacts', App\Http\Controllers\LeadContactsController::class);
 
+    Route::get('scheduler',[App\Http\Controllers\SchedulerController::class,'index'])->name('scheduler.index');
+
     Route::get('settings',[App\Http\Controllers\SettingsController::class,'index'])->name('settings.index');
     Route::patch('settings-update/{id}',[App\Http\Controllers\SettingsController::class,'update'])->name('settings.update');
 
