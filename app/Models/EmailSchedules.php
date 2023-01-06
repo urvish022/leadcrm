@@ -16,6 +16,13 @@ class EmailSchedules extends Model
         'subject',
         'body',
         'schedule_time',
-        'status'
+        'status',
+        'created_by_id',
+        'delivery_status'
     ];
+
+    public function leads()
+    {
+        return $this->belongsTo(Leads::class,'lead_id','id');
+    }
 }

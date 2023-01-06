@@ -463,7 +463,7 @@ class LeadsController extends AppBaseController
         $subject = $request->subject;
 
         if(env('APP_ENV') == 'local'){
-            $to_emails = ['urvishpatel022@gmail.com'];
+            $to_emails = ['info@techwebsoft.com','urvish31797@gmail.com'];
         } else {
             $to_emails = $request->emails;
             $to_emails = explode(",",$to_emails);
@@ -491,6 +491,7 @@ class LeadsController extends AppBaseController
         try{
             $inputs = $request->all();
             $leads = $this->leadsRepository->getWhereInData($inputs['companies']);
+            $scheduleData = [];
             foreach($leads as $lead){
                 $date = $this->convertToUTC($inputs['date'], $lead->company_origin);
 
@@ -529,21 +530,22 @@ class LeadsController extends AppBaseController
                         $emails = implode(",",$emails);
                     }
 
-                    $scheduleData = [
-                            'lead_id'=>$lead['category_id'],
+                    if(isset($emails)){
+                        $scheduleData[] = [
+                            'lead_id'=>$lead->id,
+                            'created_by_id'=>auth()->id(),
                             'emails'=>$emails,
                             'schedule_time' => $date,
                             'subject'=>$subject,
                             'body'=>$body,
                             'status'=>$emailData['email_type']
                         ];
+                    }
 
-                    $this->emailScheduleRepository->create($scheduleData);
                 }
-
-
-
             }
+
+            $this->emailScheduleRepository->insert($scheduleData);
             return response()->json(['status'=>true,'message'=>'Mail scheduled successfully!']);
         } catch (\Exception $e){
             return response()->json(['status'=>false,'message'=>"Error! something went wrong ".$e->getMessage()]);

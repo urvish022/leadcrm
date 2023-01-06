@@ -52,16 +52,16 @@
                     <a class="copy copyi-button" id="copiq_btn" >
                             <i class="fa fa-clipboard"></i>
                     </a>
-                    <div class="my-editor" id="trumbowyg-demo"></div>
                 </label>
+                {!! Form::textarea("body", "", ['class' => 'form-control my-editor','id'=>'myeditorinstance']) !!}
             </div>
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" id="send_mail_btn" onclick="sendMail()">Send Mail</button>
           <button type="button" class="btn btn-default" onclick="closeMailBoxPopup()">Close</button>
         </div>
       </div>
-
     </div>
 </div>
 <!-- Change Bulk Update Status Modal -->
@@ -224,8 +224,6 @@ $(function(){
     new Clipboard('.copy-text');
 });
 
-$('#trumbowyg-demo').trumbowyg();
-
 $('#copiq_btn').copiq({
     parent: '.form-group',
     content: '.my-editor',
@@ -328,7 +326,7 @@ function openMailBoxPopup(obj)
 
     $("#subject").val("");
     $("#emails").val("");
-    $('#trumbowyg-demo').empty();
+    tinyMCE.activeEditor.setContent("");
 
     $.ajax({
         url: "/lead-detail/"+id,
@@ -383,7 +381,7 @@ function openMailBoxPopup(obj)
                     $("#send_mail_btn").attr('disabled',true);
                 } else {
                     $("#emails").val(emailsList.toString());
-                    $('#trumbowyg-demo').trumbowyg('html',body);
+                    tinyMCE.activeEditor.setContent(body);
                     $("#subject").val(subject);
                     $("#send_mail_btn").prop('disabled',false);
                 }
@@ -482,7 +480,7 @@ function sendMail()
 {
     var emails = $("#emails").val();
     var subject = $("#subject").val();
-    var body = $("#trumbowyg-demo").html();
+    var body = tinyMCE.activeEditor.getContent();
 
     $.ajax({
         url: "/send-mail",

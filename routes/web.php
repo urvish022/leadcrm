@@ -42,6 +42,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('lead-contacts-list', [App\Http\Controllers\LeadContactsController::class,'list'])->name('lead-contacts.list');
     Route::resource('lead-contacts', App\Http\Controllers\LeadContactsController::class);
 
+    Route::delete('delete-scheduler-data/{id}',[App\Http\Controllers\SchedulerController::class,'deleteSchedulerData'])->name('scheduler.delete-data');
+    Route::post('get-scheduler-data',[App\Http\Controllers\SchedulerController::class,'getSchedulerData'])->name('scheduler.schedule-data');
     Route::get('scheduler',[App\Http\Controllers\SchedulerController::class,'index'])->name('scheduler.index');
 
     Route::get('settings',[App\Http\Controllers\SettingsController::class,'index'])->name('settings.index');

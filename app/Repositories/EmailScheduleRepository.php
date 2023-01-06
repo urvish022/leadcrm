@@ -37,4 +37,19 @@ class EmailScheduleRepository extends BaseRepository
     {
         return EmailSchedules::class;
     }
+
+    public function getSchedulerData($start,$end)
+    {
+        return EmailSchedules::with('leads')->whereBetween('schedule_time',[$start,$end])->get();
+    }
+
+    public function insert($data)
+    {
+        return EmailSchedules::insert($data);
+    }
+
+    public function delete($id)
+    {
+        return EmailSchedules::find($id)->delete();
+    }
 }

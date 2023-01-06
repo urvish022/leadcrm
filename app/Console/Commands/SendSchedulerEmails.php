@@ -4,6 +4,10 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Repositories\EmailScheduleRepository;
+use App\Models\EmailSchedules;
+use Carbon\Carbon;
+use Illuminate\Contracts\Bus\Dispatcher;
+use App\Jobs\SendEmailQueueJob;
 
 class SendSchedulerEmails extends Command
 {
@@ -39,7 +43,16 @@ class SendSchedulerEmails extends Command
      */
     public function handle()
     {
-        // EmailScheduleRepository::where('')
-        return 0;
+        $start = Carbon::now();
+        $end = Carbon::now()->addMinutes(2);
+
+        $scheduleData = EmailSchedules::whereBetween('schedule_time',[$start,$end])->where('delivery_status','pending')->get();
+        foreach($scheduleData as $value){
+
+            $body = $value->body;
+            $to_emails = $value->emails;
+
+            return app(Dispatcher::class)->dispatch(new SendEmailQueueJob($value));
+        }
     }
 }
