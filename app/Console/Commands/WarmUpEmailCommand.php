@@ -41,7 +41,6 @@ class WarmUpEmailCommand extends Command
      */
     public function handle()
     {
-        \Log::info("start");
         $to_emails = ['urvish31797@gmail.com','info@techwebsoft.com','amishpatel61101@gmail.com','urvishpatel022@gmail.com','urvishandroiddeveloper@gmail.com'];
 
         $template = LeadEmailTemplate::find(7);
@@ -59,6 +58,5 @@ class WarmUpEmailCommand extends Command
                     ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
                 });
         }
-        \Log::info("end");
     }
 }

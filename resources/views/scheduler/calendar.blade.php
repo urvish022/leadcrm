@@ -147,7 +147,6 @@
                 success: function(res) {
                     if (res.status) {
                         var data = res.data;
-                        console.log(data);
                         events = data;
                         $('#calendar').fullCalendar('addEventSource', events);
                     }
