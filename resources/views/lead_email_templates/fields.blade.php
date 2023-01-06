@@ -18,10 +18,7 @@
     {!! Form::text('subject', null, ['class' => 'form-control']) !!}
 </div>
 
-<div class="form-group col-sm-6">
-    {!! Form::label('body', 'Body:') !!}
-    {!! Form::textarea('body', null, ['class' => 'form-control my-editor','id'=>'trumbowyg-body']) !!}
-</div>
+<x-forms.tinymce-editor fieldName="body" label="Body:" />
 
 <div class="form-group col-sm-6">
     {!! Form::label('keywords', 'Keywords:') !!}
@@ -34,8 +31,3 @@
     <a href="{{ route('lead-email-templates.index') }}" class="btn btn-secondary">Cancel</a>
 </div>
 
-@push('scripts')
-<script type="text/javascript">
-$('#trumbowyg-body').trumbowyg();
-</script>
-@endpush

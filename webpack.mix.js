@@ -18,14 +18,12 @@ mix.combine([
     'public/assets/coreui/coreui.min.css',
     'public/assets/datatables/jquery.dataTables.min.css',
     'public/assets/toastr/toastr.min.css',
-    'public/assets/trumbowyg/dist/ui/trumbowyg.min.css',
     'public/assets/datetimepicker/build/jquery.datetimepicker.min.css',
 ], 'public/css/plugins.css');
 
 mix.combine([
     'public/assets/coreui/coreui.min.js',
     'public/assets/datatables/jquery.dataTables.min.js',
-    'public/assets/trumbowyg/dist/trumbowyg.min.js',
     'public/assets/toastr/toastr.min.js',
     'public/assets/copiq/jquery.copiq.js',
     'public/assets/clipboard/clipboard.min.js',

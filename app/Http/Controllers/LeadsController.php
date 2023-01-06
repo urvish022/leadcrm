@@ -115,7 +115,7 @@ class LeadsController extends AppBaseController
             }
             DB::commit();
 
-            Flash::success('Leads imported successfully!');
+            Flash::success('Prospect imported successfully!');
             return redirect(route('leads.index'));
         } catch(\exception $e){
             \Log::error($e);
@@ -311,7 +311,7 @@ class LeadsController extends AppBaseController
 
         $leads = $this->leadsRepository->create($input);
 
-        Flash::success('Leads saved successfully.');
+        Flash::success('Prospect saved successfully.');
 
         return redirect(route('leads.index'));
     }
@@ -328,7 +328,7 @@ class LeadsController extends AppBaseController
         $leads = $this->leadsRepository->show($id);
 
         if (empty($leads)) {
-            Flash::error('Leads not found');
+            Flash::error('Prospect not found');
 
             return redirect(route('leads.index'));
         }
@@ -348,7 +348,7 @@ class LeadsController extends AppBaseController
         $leads = $this->leadsRepository->find($id);
 
         if (empty($leads)) {
-            Flash::error('Leads not found');
+            Flash::error('Prospect not found');
 
             return redirect(route('leads.index'));
         }
@@ -369,14 +369,14 @@ class LeadsController extends AppBaseController
         $leads = $this->leadsRepository->find($id);
 
         if (empty($leads)) {
-            Flash::error('Leads not found');
+            Flash::error('Prospect not found');
 
             return redirect(route('leads.index'));
         }
 
         $leads = $this->leadsRepository->update($request->all(), $id);
 
-        Flash::success('Leads updated successfully.');
+        Flash::success('Prospect updated successfully.');
 
         return redirect(route('leads.index'));
     }
@@ -395,14 +395,14 @@ class LeadsController extends AppBaseController
         $leads = $this->leadsRepository->find($id);
 
         if (empty($leads)) {
-            Flash::error('Leads not found');
+            Flash::error('Prospect not found');
 
             return redirect(route('leads.index'));
         }
 
         $this->leadsRepository->delete($id);
 
-        Flash::success('Leads deleted successfully.');
+        Flash::success('Prospect deleted successfully.');
 
         return redirect(route('leads.index'));
     }

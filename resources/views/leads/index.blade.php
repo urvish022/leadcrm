@@ -23,7 +23,7 @@
 @endpush
 @section('content')
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">Companies</li>
+        <li class="breadcrumb-item">Prospects</li>
 
     </ol>
     <div class="container-fluid">
@@ -31,7 +31,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <a class="filter-button pull-right" href="#" onclick="filterPopup()"><i class="fa fa-filter fa-lg"></i>&nbsp;Filter</a>
-                <a class="import-leads-button pull-right" href="{{ route('leads.import') }}"><i class="fa fa-plus-square fa-lg"></i>&nbsp;Import Companies</a>
+                <a class="import-leads-button pull-right" href="{{ route('leads.import') }}"><i class="fa fa-plus-square fa-lg"></i>&nbsp;Import Prospect</a>
                 <a class="import-leads-button pull-right" href="#" onclick="exportLeads()"><i class="fa fa-download fa-lg"></i>&nbsp;Export</a>
             </div>
         </div>
@@ -59,7 +59,7 @@
                      <div class="card">
                          <div class="card-header">
                              <i class="fa fa-align-justify"></i>
-                             Companies
+                             Prospects
                              <!-- <a class="pull-right" href="{{ route('leads.create') }}"><i class="fa fa-plus-square fa-lg"></i></a> -->
                          </div>
                          <div class="card-body">

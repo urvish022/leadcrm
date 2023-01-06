@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-         <a href="{!! route('leads.index') !!}">Companies</a>
+         <a href="{!! route('leads.index') !!}">Prospect</a>
       </li>
       <li class="breadcrumb-item active">Create</li>
     </ol>
@@ -15,7 +15,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <i class="fa fa-plus-square-o fa-lg"></i>
-                                <strong>Create Company</strong>
+                                <strong>Create Prospect</strong>
                             </div>
                             <div class="card-body">
                                 {!! Form::open(['route' => 'leads.store']) !!}

@@ -49,15 +49,9 @@
     {!! Form::text('bcc_name', $setting->bcc_name, ['class' => 'form-control']) !!}
 </div>
 
-<x-forms.tinymce-editor :content="$setting->email_signature" />
+<x-forms.tinymce-editor fieldName="email_signature" label="Email Signature" :value="$setting->email_signature" />
 
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
     {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
 </div>
-
-@push('scripts')
-<script type="text/javascript">
-$('#trumbowyg-body').trumbowyg();
-</script>
-@endpush

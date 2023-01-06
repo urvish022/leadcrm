@@ -13,7 +13,7 @@
 <li class="nav-item {{ Request::is('leads*') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('leads.index') }}">
         <i class="fa fa-building"></i>&nbsp;
-        <span>Companies</span>
+        <span>Prospects</span>
     </a>
 </li>
 <li class="nav-item {{ Request::is('lead-contacts*') ? 'active' : '' }}">

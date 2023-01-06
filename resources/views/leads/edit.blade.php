@@ -3,7 +3,7 @@
 @section('content')
     <ol class="breadcrumb">
           <li class="breadcrumb-item">
-             <a href="{!! route('leads.index') !!}">Companies</a>
+             <a href="{!! route('leads.index') !!}">Prospect</a>
           </li>
           <li class="breadcrumb-item active">Edit</li>
         </ol>
@@ -15,7 +15,7 @@
                       <div class="card">
                           <div class="card-header">
                               <i class="fa fa-edit fa-lg"></i>
-                              <strong>Edit Company</strong>
+                              <strong>Edit Prospect</strong>
                           </div>
                           <div class="card-body">
                               {!! Form::model($leads, ['route' => ['leads.update', $leads->id], 'method' => 'patch']) !!}
