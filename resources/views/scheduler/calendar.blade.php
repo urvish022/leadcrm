@@ -107,7 +107,7 @@
                 eventClick: function(info) {
                     eventClicked(info);
                 }
-            })
+            });
 
             const dates = getStartEndDate();
             getCalendarData(dates);
