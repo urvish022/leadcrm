@@ -97,12 +97,11 @@
 
         $(document).ready(function() {
             $('#calendar').fullCalendar({
-                // put your options and callbacks here
                 events: null,
-                eventLimit: true, // for all non-TimeGrid views
+                eventLimit: true,
                 views: {
                     timeGrid: {
-                        eventLimit: 6 // adjust to 6 only for timeGridWeek/timeGridDay
+                        eventLimit: 6
                     }
                 },
                 eventClick: function(info) {
@@ -179,7 +178,7 @@
             const minute = datetime.getMinutes();
             const second = datetime.getSeconds();
 
-            datetime = datetime.toLocaleDateString("en-GB", { // you can use undefined as first argument
+            datetime = datetime.toLocaleDateString("en-GB", {
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit",
