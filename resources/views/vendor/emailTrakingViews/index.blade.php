@@ -97,6 +97,6 @@
         $('#tracker_table').DataTable({
             "pageLength": 100
         });
-    } );
+    });
     </script>
 @endsection
