@@ -33,7 +33,7 @@ trait UtilTrait
             $dateData->toAtomString();
             $dateData->setTimezone("UTC");
 
-            $db_date = $dateData->format('Y-m-d H:i:s');
+            $db_date = $dateData->format('d/m/Y H:i');
         }
 
         return $db_date;

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use App\Traits\UtilTrait;
 use App\Exports\LeadsExport;
+use Carbon\Carbon;
 use QuickEmailVerification;
 use Session;
 use Config;
@@ -486,64 +487,96 @@ class LeadsController extends AppBaseController
             $inputs = $request->all();
             $leads = $this->leadsRepository->getWhereInData($inputs['companies']);
             $scheduleData = [];
+            $user_settings = Session::get('user-settings');
+            $interval_days = $user_settings->followup_interval_days;
+
             foreach($leads as $lead){
-                $date = $this->convertToUTC($inputs['date'], $lead->company_origin);
 
-                $emailData = $this->leadsEmailRepository->getDefaultEmailTemplate(['email_type'=>$lead['status'],'category_id'=>$lead['category_id']]);
-                if(!empty($emailData)){
-                    $keywords = explode(", ",$emailData['keywords']);
-                    $body = $emailData['body'];
-                    $subject = $emailData['subject'];
-                    for($i=0;$i<count($keywords);$i++)
-                    {
-                        $subject = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$subject);
-
-                        $subject = str_replace("{","",$subject);
-                        $subject = str_replace("}","",$subject);
-
-                        $body = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$body);
-
-                        if($keywords[$i] == "website"){
-                            $body = preg_replace("http://www.website.com/","http://"+$lead->{$keywords[$i]},$body);
-                        }
-
-                        $body = str_replace("{","",$body);
-                        $body = str_replace("}","",$body);
-
-                        $emails = [];
-
-                        if(!empty($lead->company_email)){
-                            $emails[] = $lead->company_email;
-                        }
-                        $contacts = $lead->lead_contacts->toArray();
-                        $contact_emails = array_column($contacts,'email');
-                        foreach($contact_emails as $email){
-                            $emails[] = $email;
-                        }
-
-                        $emails = implode(",",$emails);
+                $remaining_stages = $this->getRemainingStages($lead['status']);
+                $date = $inputs['date'];
+                for($i=0;$i<count($remaining_stages);$i++)
+                {
+                    if($i != 0){
+                        $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('d/m/Y H:i');
                     }
 
-                    if(isset($emails)){
-                        $scheduleData[] = [
-                            'lead_id'=>$lead->id,
-                            'created_by_id'=>auth()->id(),
-                            'emails'=>$emails,
-                            'schedule_time' => $date,
-                            'subject'=>$subject,
-                            'body'=>$body,
-                            'status'=>$emailData['email_type']
-                        ];
-                    }
+                    $date = $this->convertToUTC($date, $lead->company_origin);
+                    $emailData = $this->leadsEmailRepository->getEmailTemplate(['email_type'=>$remaining_stages[$i],'category_id'=>$lead['category_id']]);
+                    if(!empty($emailData)){
+                        $keywords = explode(", ",$emailData['keywords']);
+                        $body = $emailData['body'];
+                        $subject = $emailData['subject'];
 
+                        $emailSubjectBodayData = $this->createEmailSubjectBody($keywords,$subject,$body,$lead);
+                        extract($emailSubjectBodayData);
+
+                        if(isset($emails)){
+                            $schedule_time = Carbon::createFromFormat('d/m/Y H:i',$date)->format('Y-m-d H:i');
+                            $scheduleData[] = [
+                                'lead_id'=>$lead->id,
+                                'created_by_id'=>auth()->id(),
+                                'emails'=>$emails,
+                                'schedule_time' => $schedule_time,
+                                'subject'=>$subject,
+                                'body'=>$body,
+                                'status'=>$emailData['email_type']
+                            ];
+                        }
+                    }
                 }
             }
 
             $this->emailScheduleRepository->insert($scheduleData);
             return response()->json(['status'=>true,'message'=>'Mail scheduled successfully!']);
         } catch (\Exception $e){
+            return $e;
             return response()->json(['status'=>false,'message'=>"Error! something went wrong ".$e->getMessage()]);
         }
+    }
+
+    public function getRemainingStages($current_stage)
+    {
+        $stages = ['scrapped','initial','followup1','followup2'];
+        $index = array_search($current_stage, $stages) + 1;
+        $remaining_stages = array_splice($stages,$index);
+
+        return $remaining_stages;
+    }
+
+    public function createEmailSubjectBody($keywords,$subject,$body,$lead)
+    {
+        $emails = null;
+        for($i=0;$i<count($keywords);$i++)
+        {
+            $subject = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$subject);
+
+            $subject = str_replace("{","",$subject);
+            $subject = str_replace("}","",$subject);
+
+            $body = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$body);
+
+            if($keywords[$i] == "website"){
+                $body = preg_replace("http://www.website.com/","http://"+$lead->{$keywords[$i]},$body);
+            }
+
+            $body = str_replace("{","",$body);
+            $body = str_replace("}","",$body);
+
+            $emails = [];
+
+            if(!empty($lead->company_email)){
+                $emails[] = $lead->company_email;
+            }
+            $contacts = $lead->lead_contacts->toArray();
+            $contact_emails = array_column($contacts,'email');
+            foreach($contact_emails as $email){
+                $emails[] = $email;
+            }
+
+            $emails = implode(",",$emails);
+        }
+
+        return compact('subject','body','emails');
     }
 
     public function get_lead_details($id, Request $request)

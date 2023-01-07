@@ -63,6 +63,14 @@ class LeadsEmailRepository extends BaseRepository
         ->first();
     }
 
+    public function getEmailTemplate($data)
+    {
+        return LeadEmailTemplate::where('category_id',$data['category_id'])
+        ->where('email_type',$data['email_type'])
+        ->where('default_status',1)
+        ->first();
+    }
+
     public function getEmailType($type)
     {
         if($type == 'scrapped'){

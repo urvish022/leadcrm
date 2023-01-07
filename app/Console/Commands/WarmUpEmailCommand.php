@@ -11,6 +11,7 @@ use App\Traits\UtilTrait;
 
 class WarmUpEmailCommand extends Command
 {
+    use UtilTrait;
     /**
      * The name and signature of the console command.
      *
@@ -51,14 +52,13 @@ class WarmUpEmailCommand extends Command
         $email_signature = view('email_template.signature');
         $body = View::make('email_template.index')->with(['body'=>$content,'email_signature'=>$email_signature]);
 
-        $this->setMailConfig(1);
-
-        Mail::html($body,function($message) use($subject,$to_emails,$body){
-            $message->to($to_emails)
-            ->subject($subject)
-            ->replyTo(Config::get('mail.from.address'))
-            ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
-        });
-
+        if($this->setMailConfig(1)){
+            Mail::html($body,function($message) use($subject,$to_emails,$body){
+                $message->to($to_emails)
+                ->subject($subject)
+                ->replyTo(Config::get('mail.from.address'))
+                ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
+            });
+        }
     }
 }

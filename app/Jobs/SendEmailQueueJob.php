@@ -10,6 +10,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\EmailSchedules;
 use App\Models\UserSettings;
+use App\Models\Leads;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Mail;
 use App\Traits\UtilTrait;
@@ -62,6 +63,7 @@ class SendEmailQueueJob implements ShouldQueue
             });
 
             EmailSchedules::where('id',$emailData->id)->update(['delivery_status'=>'success']);
+            Leads::where('id',$emailData->lead_id)->update(['status'=>$emailData->status]);
         } catch (\Exception $e){
             EmailSchedules::where('id',$emailData->id)->update(['delivery_status'=>'fail']);
         }

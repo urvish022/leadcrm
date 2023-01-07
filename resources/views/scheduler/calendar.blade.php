@@ -145,12 +145,16 @@
                 type: "POST",
                 success: function(res) {
                     if (res.status) {
-                        var data = res.data;
-                        events = data;
-                        $('#calendar').fullCalendar('addEventSource', events);
+                        refreshCalendar(res.data);
                     }
                 }
             });
+        }
+
+        function refreshCalendar(events)
+        {
+            $("#calendar").fullCalendar('removeEvents');
+            $('#calendar').fullCalendar('addEventSource', events);
         }
 
         function getStartEndDate() {

@@ -13,6 +13,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "infyomlabs/coreui-templates": "^1.0",
         "infyomlabs/laravel-generator": "^3.0",
+        "jdavidbakr/mail-tracker": "^5.0",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
