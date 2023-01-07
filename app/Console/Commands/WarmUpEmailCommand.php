@@ -41,7 +41,7 @@ class WarmUpEmailCommand extends Command
      */
     public function handle()
     {
-        $to_emails = ['urvish31797@gmail.com','info@techwebsoft.com','amishpatel61101@gmail.com','urvishpatel022@gmail.com','urvishandroiddeveloper@gmail.com'];
+        $to_emails = ['urvish31797@gmail.com','info@techwebsoft.com','amishpatel61001@gmail.com','urvishpatel022@gmail.com','urvishandroideveloper@gmail.com'];
 
         $template = LeadEmailTemplate::find(7);
         $subject = $template->subject;
@@ -50,13 +50,14 @@ class WarmUpEmailCommand extends Command
         $email_signature = view('email_template.signature');
         $body = View::make('email_template.index')->with(['body'=>$content,'email_signature'=>$email_signature]);
 
-        foreach($to_emails as $email){
-            Mail::html($body,function($message) use($subject,$email,$body){
-                    $message->to($email)
-                    ->subject($subject)
-                    ->replyTo(Config::get('mail.from.address'))
-                    ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
-                });
-        }
+        $this->setMailConfig(1);
+
+        Mail::html($body,function($message) use($subject,$to_emails,$body){
+            $message->to($to_emails)
+            ->subject($subject)
+            ->replyTo(Config::get('mail.from.address'))
+            ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
+        });
+
     }
 }

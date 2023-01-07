@@ -450,14 +450,6 @@ class LeadsController extends AppBaseController
 
         $email_signature = $user_settings->email_signature;
 
-        Config::set('mail.mailers.smtp.transport',$user_settings->mail_type);
-        Config::set('mail.mailers.smtp.host',$user_settings->mail_host);
-        Config::set('mail.mailers.smtp.port',$user_settings->mail_port);
-        Config::set('mail.mailers.smtp.encryption',$user_settings->mail_encryption);
-        Config::set('mail.mailers.smtp.username',$user_settings->mail_username);
-        Config::set('mail.mailers.smtp.password',$user_settings->mail_password);
-        Config::set('mail.from.address',$user_settings->mail_from_address);
-        Config::set('mail.from.name',$user_settings->mail_from_name);
 
         $body = $request->body;
         $subject = $request->subject;
@@ -470,6 +462,8 @@ class LeadsController extends AppBaseController
         }
 
         try{
+            $this->setMailConfig(auth()->id());
+
             $body = View::make('email_template.index')->with(compact('body','email_signature'));
 
             $status = Mail::html($body,function($message) use($subject,$to_emails,$body,$user_settings){

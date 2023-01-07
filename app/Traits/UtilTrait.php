@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 use Carbon\Carbon;
+use Config;
+use Illuminate\Support\Facades\Cache;
 
 trait UtilTrait
 {
@@ -51,5 +53,45 @@ trait UtilTrait
         } else {
             return "UTC";
         }
+    }
+
+    public function setMailConfig($userId)
+    {
+        $configStatus = false;
+        try{
+            if (Cache::has('users_settings')) {
+
+                $user_settings = Cache::get('users_settings');
+                $index = array_search($userId, array_column($user_settings, 'user_id'));
+                $user_setting = $user_settings[$index];
+
+                if(isset($user_setting) && !empty($user_setting)){
+
+                    $smtpMailConfig = [
+                        'transport'=>$user_setting['mail_type'],
+                        'host'=>$user_setting['mail_host'],
+                        'port'=>$user_setting['mail_port'],
+                        'encryption'=>$user_setting['mail_encryption'],
+                        'username'=>$user_setting['mail_username'],
+                        'password'=>$user_setting['mail_password']
+                    ];
+
+                    Config::set(['mail.mailers.smtp' => $smtpMailConfig]);
+
+                    $fromConfig = [
+                        'address' => $user_setting['mail_from_address'],
+                        'name' => $user_setting['mail_from_name']
+                    ];
+
+                    Config::set(['mail.from'=>$fromConfig]);
+
+                    $configStatus = true;
+                }
+
+            }
+        } catch(\Exception $e){
+
+        }
+        return $configStatus;
     }
 }

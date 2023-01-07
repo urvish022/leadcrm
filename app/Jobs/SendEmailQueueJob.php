@@ -12,11 +12,13 @@ use App\Models\EmailSchedules;
 use App\Models\UserSettings;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Mail;
+use App\Traits\UtilTrait;
 use Config;
 
 class SendEmailQueueJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, UtilTrait;
+
     public $emailData;
     /**
      * Create a new job instance.
@@ -39,8 +41,8 @@ class SendEmailQueueJob implements ShouldQueue
         try{
             $body = $emailData->body;
             $subject = $emailData->subject;
-
-            $user_settings = UserSettings::find($emailData->created_by_id);
+            $userId = $emailData->created_by_id;
+            $user_settings = UserSettings::find($userId);
             $email_signature = $user_settings->email_signature;
 
             $body = View::make('email_template.index')->with(compact('body','email_signature'));
@@ -48,6 +50,8 @@ class SendEmailQueueJob implements ShouldQueue
             if(env('APP_ENV') == 'local'){
                 $to_emails = ['info@techwebsoft.com','urvish31797@gmail.com'];
             }
+
+            $this->setMailConfig($userId);
 
             $status = Mail::html($body,function($message) use($subject,$to_emails,$body,$user_settings){
                 $message->to($to_emails)
