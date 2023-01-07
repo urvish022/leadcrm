@@ -37,7 +37,8 @@
         </div>
         <div class="row">
             <div class="col-sm-12">
-                <table class="table table-striped">
+                <table class="table table-striped" id="tracker_table">
+                    <thead>
                     <tr>
                         <th>SMTP</th>
                         <th>Recipient</th>
@@ -50,6 +51,8 @@
                         <th>View Email</th>
                         <th>Click Report</th>
                     </tr>
+                    </thead>
+                    <tbody>
                 @foreach($emails as $email)
                     <tr class="{{ $email->report_class }}">
                       <td>
@@ -78,6 +81,7 @@
                       </td>
                     </tr>
                 @endforeach
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -87,4 +91,12 @@
             </div>
         </div>
     </div>
+
+    <script type="text/javascript">
+    $(document).ready( function () {
+        $('#tracker_table').DataTable({
+            "pageLength": 100
+        });
+    } );
+    </script>
 @endsection
