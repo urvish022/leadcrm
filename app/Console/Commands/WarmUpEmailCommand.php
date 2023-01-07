@@ -7,6 +7,7 @@ use App\Models\LeadEmailTemplate;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
 use Config;
+use App\Traits\UtilTrait;
 
 class WarmUpEmailCommand extends Command
 {
