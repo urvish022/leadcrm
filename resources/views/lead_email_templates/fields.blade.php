@@ -18,7 +18,11 @@
     {!! Form::text('subject', null, ['class' => 'form-control']) !!}
 </div>
 
-<x-forms.tinymce-editor fieldName="body" label="Body:" />
+@if(isset($leadContacts))
+<x-forms.tinymce-editor fieldName="body" label="Body:" value="{{$leadContacts->body}}" />
+@else
+<x-forms.tinymce-editor fieldName="body" label="Body:" value="" />
+@endif
 
 <div class="form-group col-sm-6">
     {!! Form::label('keywords', 'Keywords:') !!}
