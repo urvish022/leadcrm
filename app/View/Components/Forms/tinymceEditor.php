@@ -14,7 +14,7 @@ class tinymceEditor extends Component
      *
      * @return void
      */
-    public function __construct($fieldName, $label, $value = null)
+    public function __construct($fieldName, $label, $value = '')
     {
         $this->fieldName = $fieldName;
         $this->label = $label;

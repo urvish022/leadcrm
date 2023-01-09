@@ -164,6 +164,15 @@
                     @endforeach
                 </select>
             </div>
+            <div class="form-group">
+                <label for="recipient-name" class="col-form-label">Select Niche: </label>
+                <select class="form-control" name="niche" id="niche_select">
+                    <option value="" selected>All</option>
+                    @foreach ($leadCategories as $val)
+                        <option value="{{$val->id}}">{{$val->category_name}}</option>
+                    @endforeach
+                </select>
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" onclick="filterStatus()">Submit</button>

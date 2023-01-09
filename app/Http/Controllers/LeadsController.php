@@ -60,7 +60,7 @@ class LeadsController extends AppBaseController
                     $company_website = $this->getWebsite($val[1]);
                     $first_name = ucfirst($val[2]);
                     $last_name = ucfirst($val[3]);
-                    $email = $val[4];
+                    $email = strtolower($val[4]);
                     $linkedin_profile = $val[5];
                     $title = $val[6];
                     $email_status = $val[7];
@@ -69,7 +69,7 @@ class LeadsController extends AppBaseController
                     $employees = $val[10];
                     $industry = $val[11];
                     $keywords = $val[12];
-                    $company_email = $val[13];
+                    $company_email = strtolower($val[13]);
                     $company_linkedin_url = $val[14];
                     $company_facebook_url = $val[15];
                     $company_twitter_url = $val[16];
@@ -83,7 +83,7 @@ class LeadsController extends AppBaseController
                         'created_by_id'=> auth()->id(),
                         'category_id'=> $request->category_id,
                         'company_name'=>$company_name,
-                        'company_email'=>$company_email,
+                        'company_email'=>preg_replace('/[^@\s]*@[^@\s]*\.[^@\s]*/','',$company_email),
                         'company_phone_number'=>$company_phone_number,
                         'company_website'=>$company_website,
                         'total_employees'=>$employees,
@@ -96,7 +96,8 @@ class LeadsController extends AppBaseController
                         'company_city'=>$city,
                         'company_address'=>$company_address,
                         'annual_revenue'=>$revenue,
-                        'keywords'=>$keywords
+                        'keywords'=>$keywords,
+                        'status'=>'scrapped'
                     ]);
 
                     if($leadData)
@@ -106,7 +107,7 @@ class LeadsController extends AppBaseController
                             'first_name'=>$first_name,
                             'last_name'=>$last_name,
                             'title'=>$title,
-                            'email'=>$email,
+                            'email'=>preg_replace('/[^@\s]*@[^@\s]*\.[^@\s]*/', '', $email),
                             'email_status'=>$email_status,
                             'phone'=>$employee_phone_number,
                             'linkedin_profile'=>$linkedin_profile
@@ -115,7 +116,6 @@ class LeadsController extends AppBaseController
                 }
             }
             DB::commit();
-
             Flash::success('Prospect imported successfully!');
             return redirect(route('leads.index'));
         } catch(\exception $e){
@@ -171,6 +171,7 @@ class LeadsController extends AppBaseController
             'url'=> route('leads.list'),
             'data' => 'function(d) {
                 d.filter = $("#filter_status_select").val();
+                d.niche_filter = $("#niche_select").val();
             }',
             'type'=>'POST'
         ];
@@ -184,8 +185,11 @@ class LeadsController extends AppBaseController
                                 'pageLength'=>50,
                             ]);
 
+        $leadCategories = $this->leadCategoryRepository->getCountWithLeads();
+
+        $data = compact('dt_html','leadCategories');
         return view('leads.index')
-            ->with('dt_html',$dt_html);
+            ->with($data);
     }
 
     public function list(Request $request)
@@ -208,7 +212,13 @@ class LeadsController extends AppBaseController
         });
 
         $leads = $leads->when(request('filter'), function ($q){
+            \Log::info("in filter");
             $q->where('status', '=', request('filter'));
+        });
+
+        $leads = $leads->when(request('niche_filter'), function ($q){
+            \Log::info(request('niche_filter'));
+            $q->where('category_id', '=', request('niche_filter'));
         });
 
         $leads = $leads->when(empty(request('order')[0]['column']), function($q){
