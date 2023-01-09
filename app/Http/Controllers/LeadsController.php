@@ -83,7 +83,7 @@ class LeadsController extends AppBaseController
                         'created_by_id'=> auth()->id(),
                         'category_id'=> $request->category_id,
                         'company_name'=>$company_name,
-                        'company_email'=>preg_replace('/[^@\s]*@[^@\s]*\.[^@\s]*/','',$company_email),
+                        'company_email'=>preg_replace('/[\x00-\x1F\x80-\xFF]/', '',$company_email),
                         'company_phone_number'=>$company_phone_number,
                         'company_website'=>$company_website,
                         'total_employees'=>$employees,
@@ -107,7 +107,7 @@ class LeadsController extends AppBaseController
                             'first_name'=>$first_name,
                             'last_name'=>$last_name,
                             'title'=>$title,
-                            'email'=>preg_replace('/[^@\s]*@[^@\s]*\.[^@\s]*/', '', $email),
+                            'email'=>preg_replace('/[\x00-\x1F\x80-\xFF]/', '',$email),
                             'email_status'=>$email_status,
                             'phone'=>$employee_phone_number,
                             'linkedin_profile'=>$linkedin_profile

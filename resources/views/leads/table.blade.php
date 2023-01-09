@@ -352,13 +352,13 @@ function openMailBoxPopup(obj)
         success: function (res) {
             var data = res.data.lead_data;
             var mail_data = res.data.email_template;
-
+            console.log(data);
             if(!jQuery.isEmptyObject(res)){
                 var all_keywords = [];
                 var body = mail_data.body;
                 var subject = mail_data.subject;
                 var keywords = mail_data.keywords;
-                all_keywords = keywords.split(", ");
+                all_keywords = keywords.split(",");
                 for(var i=0;i<all_keywords.length;i++)
                 {
                     body = body.replaceAll(all_keywords[i],data[all_keywords[i]]);
@@ -374,11 +374,12 @@ function openMailBoxPopup(obj)
                 subject = subject.replace(/[{}]/g, "");
 
                 var emails = [];
-                if(data.company_email != null){
+                if(data.company_email != null && data.company_email != ""){
+                    console.log(data.company_email);
                     emails.push(data.company_email);
                 }
 
-                for(var i=0;i< data.lead_contacts.length;i++){
+                for(var i=0;i<data.lead_contacts.length;i++){
                     emails.push(data.lead_contacts[i].email);
                 }
 
