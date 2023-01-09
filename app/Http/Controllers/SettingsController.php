@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateUserSettingRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Flash;
+use Session;
 
 class SettingsController extends Controller
 {
@@ -33,6 +34,10 @@ class SettingsController extends Controller
         Cache::rememberForever('users_settings', function () use($allUserSettigns) {
             return $allUserSettigns;
         });
+
+        $userSettings = UserSettings::where('user_id',auth()->id())->first();
+        Session::forget('user-settings');
+        Session::put('user-settings', $userSettings);
 
         Flash::success('User Settings updated successfully.');
         return redirect(route('settings.index'));
