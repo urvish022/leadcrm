@@ -513,7 +513,7 @@ class LeadsController extends AppBaseController
                     $date = $this->convertToUTC($date, $lead->company_origin);
                     $emailData = $this->leadsEmailRepository->getEmailTemplate(['email_type'=>$remaining_stages[$i],'category_id'=>$lead['category_id']]);
                     if(!empty($emailData)){
-                        $keywords = explode(", ",$emailData['keywords']);
+                        $keywords = explode(",",$emailData['keywords']);
                         $body = $emailData['body'];
                         $subject = $emailData['subject'];
 
@@ -565,8 +565,8 @@ class LeadsController extends AppBaseController
 
             $body = preg_replace("{".$keywords[$i]."}",$lead->{$keywords[$i]},$body);
 
-            if($keywords[$i] == "website"){
-                $body = preg_replace("http://www.website.com/","http://"+$lead->{$keywords[$i]},$body);
+            if($keywords[$i] == "company_website"){
+                $body = str_replace("http://www.website.com/","http://".$lead->company_website,$body);
             }
 
             $body = str_replace("{","",$body);
