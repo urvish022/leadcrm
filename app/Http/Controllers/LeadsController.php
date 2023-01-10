@@ -194,109 +194,114 @@ class LeadsController extends AppBaseController
 
     public function list(Request $request)
     {
-        $data = $request->all();
-        $perpage = !empty($data['length']) ? (int) $data['length'] : 10;
-        $filter = isset($data['search']) && is_string($data['search']) ? $data['search'] : '';
-        $sort_type = isset($data['order'][0]['dir']) && is_string($data['order'][0]['dir']) ? $data['order'][0]['dir'] : '';
-        $sort_col = $data['order'][0]['column'];
-        $sort_field = $data['columns'][$sort_col]['data'];
+        try{
+            $data = $request->all();
+            $perpage = !empty($data['length']) ? (int) $data['length'] : 10;
+            $filter = isset($data['search']) && is_string($data['search']) ? $data['search'] : '';
+            $sort_type = isset($data['order'][0]['dir']) && is_string($data['order'][0]['dir']) ? $data['order'][0]['dir'] : '';
+            $sort_col = $data['order'][0]['column'];
+            $sort_field = $data['columns'][$sort_col]['data'];
 
-        $leads = Leads::with(['lead_categories','lead_contacts'])
-        ->where('status','!=','invalid')
-        ->where('created_by_id',auth()->id());
+            $leads = Leads::with(['lead_categories','lead_contacts'])
+            ->where('status','!=','invalid')
+            ->where('created_by_id',auth()->id());
 
-        $leads = $leads->when(request('search')['value'], function ($q){
-            return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
-                ->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
-                ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%');
-        });
+            $leads = $leads->when(request('search')['value'], function ($q){
+                return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
+                    ->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
+                    ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%');
+            });
 
-        $leads = $leads->when(request('filter'), function ($q){
-            \Log::info("in filter");
-            $q->where('status', '=', request('filter'));
-        });
+            $leads = $leads->when(request('filter'), function ($q){
+                \Log::info("in filter");
+                $q->where('status', '=', request('filter'));
+            });
 
-        $leads = $leads->when(request('niche_filter'), function ($q){
-            \Log::info(request('niche_filter'));
-            $q->where('category_id', '=', request('niche_filter'));
-        });
+            $leads = $leads->when(request('niche_filter'), function ($q){
+                \Log::info(request('niche_filter'));
+                $q->where('category_id', '=', request('niche_filter'));
+            });
 
-        $leads = $leads->when(empty(request('order')[0]['column']), function($q){
-            return $q->orderBy('id','DESC');
-        });
+            $leads = $leads->when(empty(request('order')[0]['column']), function($q){
+                return $q->orderBy('id','DESC');
+            });
 
-        return DataTables::of($leads)
-        ->editColumn('reach_type', function($leads){
+            return DataTables::of($leads)
+            ->editColumn('reach_type', function($leads){
 
-            if($leads->reach_type == 'email'){
-                return "<i class='fa fa-envelope'></i> ".ucfirst($leads->reach_type);
-            } else if($leads->reach_type == 'call') {
-                return "<i class='fa fa-phone'></i> ".ucfirst($leads->reach_type);
-            } else if($leads->reach_type == 'facebook') {
-                return "<i class='fa fa-facebook'></i> ".ucfirst($leads->reach_type);
-            } else if($leads->reach_type == 'linkedin') {
-                return "<i class='fa fa-linkedin'></i> ".ucfirst($leads->reach_type);
-            } else if($leads->reach_type == 'other') {
-                return "<i class='fa fa-cog'></i> ".ucfirst($leads->reach_type);
-            }
-        })
-        ->editColumn('company_phone_number', function($leads){
-            return !empty($leads->company_phone_number) && $leads->company_phone_number != 0 ? $leads->company_phone_number : "";
-        })
-        ->editColumn('category', function($leads){
-            return $leads->lead_categories->category_name;
-        })
-        ->editColumn('status', function($leads){
-            return ucfirst($leads->status);
-        })
-        ->editColumn('annual_revenue', function($leads){
-            if(!empty($leads->annual_revenue)){
-                return "$".number_format($leads->annual_revenue);
-            }
-        })
-        ->addColumn('checkbox', function($leads) {
-            return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
-        })
-        ->addColumn('company_details',function($leads){
-            $str = "<a href=".'http://'.$leads->company_website." target='_blank'><i class='fa fa-globe'></i></a>";
+                if($leads->reach_type == 'email'){
+                    return "<i class='fa fa-envelope'></i> ".ucfirst($leads->reach_type);
+                } else if($leads->reach_type == 'call') {
+                    return "<i class='fa fa-phone'></i> ".ucfirst($leads->reach_type);
+                } else if($leads->reach_type == 'facebook') {
+                    return "<i class='fa fa-facebook'></i> ".ucfirst($leads->reach_type);
+                } else if($leads->reach_type == 'linkedin') {
+                    return "<i class='fa fa-linkedin'></i> ".ucfirst($leads->reach_type);
+                } else if($leads->reach_type == 'other') {
+                    return "<i class='fa fa-cog'></i> ".ucfirst($leads->reach_type);
+                }
+            })
+            ->editColumn('company_phone_number', function($leads){
+                return !empty($leads->company_phone_number) && $leads->company_phone_number != 0 ? $leads->company_phone_number : "";
+            })
+            ->editColumn('category', function($leads){
+                return $leads->lead_categories->category_name;
+            })
+            ->editColumn('status', function($leads){
+                return ucfirst($leads->status);
+            })
+            ->editColumn('annual_revenue', function($leads){
+                if(!empty($leads->annual_revenue)){
+                    return "$".number_format($leads->annual_revenue);
+                }
+            })
+            ->addColumn('checkbox', function($leads) {
+                return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
+            })
+            ->addColumn('company_details',function($leads){
+                $str = "<a href=".'http://'.$leads->company_website." target='_blank'><i class='fa fa-globe'></i></a>";
 
-            if(!empty($leads->company_email)){
-                $str .= "&nbsp;&nbsp;";
-                $str .= "<a href='mailto:$leads->company_email' target='_blank'><i class='fa fa-envelope'></i></a>";
-            }
+                if(!empty($leads->company_email)){
+                    $str .= "&nbsp;&nbsp;";
+                    $str .= "<a href='mailto:$leads->company_email' target='_blank'><i class='fa fa-envelope'></i></a>";
+                }
 
-            if(!empty($leads->facebook_url)){
-                $str .= "&nbsp;&nbsp;";
-                $str .= "<a href='$leads->facebook_url' target='_blank'><i class='fa fa-facebook-square'></i></a>";
-            }
+                if(!empty($leads->facebook_url)){
+                    $str .= "&nbsp;&nbsp;";
+                    $str .= "<a href='$leads->facebook_url' target='_blank'><i class='fa fa-facebook-square'></i></a>";
+                }
 
-            if(!empty($leads->linkedin_url)){
-                $str .= "&nbsp;&nbsp;";
-                $str .= "<a href='$leads->linkedin_url' target='_blank'><i class='fa fa-linkedin-square'></i></a>";
-            }
+                if(!empty($leads->linkedin_url)){
+                    $str .= "&nbsp;&nbsp;";
+                    $str .= "<a href='$leads->linkedin_url' target='_blank'><i class='fa fa-linkedin-square'></i></a>";
+                }
 
-            if(!empty($leads->twitter_url)){
-                $str .= "&nbsp;&nbsp;";
-                $str .= "<a href='$leads->twitter_url' target='_blank'><i class='fa fa-twitter-square'></i></a>";
-            }
+                if(!empty($leads->twitter_url)){
+                    $str .= "&nbsp;&nbsp;";
+                    $str .= "<a href='$leads->twitter_url' target='_blank'><i class='fa fa-twitter-square'></i></a>";
+                }
 
-            $str .= "<br>";
-            $str .= strlen($leads->keywords) > 100 ? substr($leads->keywords,0,100).", and more.." : $leads->keywords;
+                $str .= "<br>";
+                $str .= strlen($leads->keywords) > 100 ? substr($leads->keywords,0,100).", and more.." : $leads->keywords;
 
-            return $str;
-        })
-        ->addColumn('action', function($leads) {
-            $str = "<a data-id=".$leads->id." data-category-id=".$leads->category_id." data-status=".$leads->status." onclick='openMailBoxPopup(this)' class='btn btn-ghost-success'><i class='fa fa-envelope'></i></a>";
-            $str .= "<a href=".route('leads.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
-            $str .= "<a href=".route('leads.edit', [$leads->id])." class='btn btn-ghost-info'><i class='fa fa-edit'></i></a>";
-            $str .= "<a onclick='changeStatus(".json_encode($leads).")' class='btn btn-ghost-info'><i class='fa fa-tag'></i></a>";
-            $str .= Form::open(['route' => ['leads.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
-            return $str;
-        })
-        ->rawColumns(['reach_type','action','checkbox','company_details'])
-        ->addIndexColumn()
-        ->escapeColumns()
-        ->toJSON();
+                return $str;
+            })
+            ->addColumn('action', function($leads) {
+                $str = "<a data-id=".$leads->id." data-category-id=".$leads->category_id." data-status=".$leads->status." onclick='openMailBoxPopup(this)' class='btn btn-ghost-success'><i class='fa fa-envelope'></i></a>";
+                $str .= "<a href=".route('leads.show', [$leads->id])." class='btn btn-ghost-success'><i class='fa fa-eye'></i></a>";
+                $str .= "<a href=".route('leads.edit', [$leads->id])." class='btn btn-ghost-info'><i class='fa fa-edit'></i></a>";
+                $str .= "<a onclick='changeStatus(".json_encode($leads).")' class='btn btn-ghost-info'><i class='fa fa-tag'></i></a>";
+                $str .= Form::open(['route' => ['leads.destroy', $leads->id], 'method' => 'delete'])."".Form::button('<i class="fa fa-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-ghost-danger', 'onclick' => "return confirm('Are you sure?')"])."".Form::close();
+                return $str;
+            })
+            ->rawColumns(['reach_type','action','checkbox','company_details'])
+            ->addIndexColumn()
+            ->escapeColumns()
+            ->toJSON();
+        } catch (\Exception $e){
+            \Log::error($e);
+            return response()->json(['status'=>false,'message'=>'Something went wrong '. $e->getMessage()]);
+        }
     }
 
     /**
