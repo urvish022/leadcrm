@@ -87,4 +87,9 @@ class LeadsRepository extends BaseRepository
             $q->where('status',1);
         }])->where(['id'=>$id])->first();
     }
+
+    public function getWhereData($where)
+    {
+        return Leads::where($where)->get();
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateLeadContactsRequest;
 use App\Http\Requests\UpdateLeadContactsRequest;
-use App\Repositories\{LeadsRepository,LeadContactsRepository};
+use App\Repositories\{LeadsRepository,LeadContactsRepository,LeadCategoryRepository};
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use App\Models\LeadContacts;
@@ -17,12 +17,13 @@ use Response;
 class LeadContactsController extends AppBaseController
 {
     /** @var  LeadContactsRepository */
-    private $leadContactsRepository, $leadsRepository;
+    private $leadContactsRepository, $leadsRepository, $leadCategoryRepository;
 
-    public function __construct(LeadContactsRepository $leadContactsRepo, LeadsRepository $leadsRepo)
+    public function __construct(LeadContactsRepository $leadContactsRepo, LeadsRepository $leadsRepo, LeadCategoryRepository $leadCategoryRepository)
     {
         $this->leadContactsRepository = $leadContactsRepo;
         $this->leadsRepository = $leadsRepo;
+        $this->leadCategoryRepository = $leadCategoryRepository;
     }
 
     /**
@@ -142,7 +143,9 @@ class LeadContactsController extends AppBaseController
      */
     public function create()
     {
-        return view('lead_contacts.create');
+        $categories = $this->leadCategoryRepository->getCountWithLeads();
+
+        return view('lead_contacts.create',compact('categories'));
     }
 
     /**
@@ -262,5 +265,12 @@ class LeadContactsController extends AppBaseController
         $this->leadContactsRepository->update(['status'=>$status],$id);
 
         return response()->json(['status'=>true]);
+    }
+
+    public function niche_lead_contacts($category_id)
+    {
+        $data = $this->leadsRepository->getWhereData(['category_id'=>$category_id]);
+
+        return response()->json(['status'=>true,'data'=>$data]);
     }
 }

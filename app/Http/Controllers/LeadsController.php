@@ -306,7 +306,9 @@ class LeadsController extends AppBaseController
      */
     public function create()
     {
-        return view('leads.create');
+        $categories = $this->leadCategoryRepository->getCountWithLeads();
+
+        return view('leads.create')->with(compact('categories'));
     }
 
     /**
@@ -319,6 +321,7 @@ class LeadsController extends AppBaseController
     public function store(CreateLeadsRequest $request)
     {
         $input = $request->all();
+        $input['created_by_id'] = auth()->id();
 
         $leads = $this->leadsRepository->create($input);
 

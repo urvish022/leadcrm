@@ -19,7 +19,7 @@ class Leads extends Model
     use HasFactory;
 
     public $table = 'leads';
-    
+
     const status = ['scrapped','initial','followup1','followup2','followup3','followup4','followup5','hold','in','out','invalid'];
 
     const reach_types = ['email','call','facebook','linkedin','other'];
@@ -54,7 +54,7 @@ class Leads extends Model
      * @var array
      */
     protected $casts = [
-        
+
     ];
 
     /**
@@ -66,6 +66,8 @@ class Leads extends Model
         'company_name' => 'required',
         'company_website' => 'required',
         'company_origin' => 'required',
+        'category_id' => 'required',
+        'status' => 'required'
     ];
 
     public static function getAllStatus()
@@ -87,7 +89,7 @@ class Leads extends Model
     {
         return $this->belongsTo(LeadCategory::class,'category_id','id');
     }
-    
+
     public function created_by()
     {
         return $this->belongsTo(User::class,'created_by_id','id');

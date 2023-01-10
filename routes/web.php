@@ -40,6 +40,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::get('lead-contacts/update-status/{id}',[App\Http\Controllers\LeadContactsController::class,'updateStatus'])->name('lead-contacts.update-status');
     Route::post('lead-contacts-list', [App\Http\Controllers\LeadContactsController::class,'list'])->name('lead-contacts.list');
+    Route::get('lead-contacts/niche-lead-contacts/{category_id}',[App\Http\Controllers\LeadContactsController::class,'niche_lead_contacts'])->name('lead-contacts.niche-contacts');
     Route::resource('lead-contacts', App\Http\Controllers\LeadContactsController::class);
 
     Route::delete('delete-scheduler-data/{id}',[App\Http\Controllers\SchedulerController::class,'deleteSchedulerData'])->name('scheduler.delete-data');

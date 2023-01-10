@@ -44,4 +44,9 @@ class LeadContactsRepository extends BaseRepository
     public function getCount($where){
         return LeadContacts::where($where)->count();
     }
+
+    public function getWhereData($where)
+    {
+        return LeadContacts::where($where)->get();
+    }
 }
