@@ -45,6 +45,7 @@ class SendEmailQueueJob implements ShouldQueue
             $userId = $emailData->created_by_id;
             $user_settings = UserSettings::find($userId);
             $email_signature = $user_settings->email_signature;
+            $to_emails = $emailData->emails;
 
             $body = View::make('email_template.index')->with(compact('body','email_signature'));
 
