@@ -65,6 +65,8 @@ class SendEmailQueueJob implements ShouldQueue
             EmailSchedules::where('id',$emailData->id)->update(['delivery_status'=>'success']);
             Leads::where('id',$emailData->lead_id)->update(['status'=>$emailData->status]);
         } catch (\Exception $e){
+            \Log::info("mail queue error");
+            \Log::error($e);
             EmailSchedules::where('id',$emailData->id)->update(['delivery_status'=>'fail']);
         }
     }
