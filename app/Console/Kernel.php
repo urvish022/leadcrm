@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use App\Jobs\UpworkFeedJob;
 
 class Kernel extends ConsoleKernel
 {
@@ -16,7 +17,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('warmup:email')->everySixHours();
-        $schedule->command('run:scheduler_emails')->everyMinute();
+        // $schedule->command('run:scheduler_emails')->everyMinute();
+        $schedule->job(new UpworkFeedJob)->everyMinute();
     }
 
     /**
