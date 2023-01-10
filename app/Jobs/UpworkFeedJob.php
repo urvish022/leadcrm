@@ -34,7 +34,6 @@ class UpworkFeedJob implements ShouldQueue
      */
     public function handle()
     {
-
         $url = "https://www.upwork.com/ab/feed/jobs/rss?q=Laravel&sort=recency&verified_payment_only=1&paging=0%3B10&api_params=1&securityToken=b67cf35559df6b9166e95b7816ede60b3daafadd9bb56f36a54e913fa175f2b2f57a5d76d2ac87e2fe25c42035a94a0133ff6a8442f2df9d6a85967877739a55&userUid=745261048028684288&orgUid=745261048028684290";
         $curl = curl_init();
 
@@ -57,18 +56,10 @@ class UpworkFeedJob implements ShouldQueue
             foreach($xml->channel->item as $val){
                 if(UpworkFeed::where('link',$val->link)->count() == 0){
                     $user = User::find(1);
-                    Notification::send($user, new UpworkSlackNotification($val->title));
+                    $user->notify(new UpworkSlackNotification($val->title,$val->description,$val->link));
                     UpworkFeed::create(['link'=>$val->link,'title'=>$val->title,'description'=>$val->description]);
                 }
             }
         }
-    }
-
-    public static function xml2array( $xmlObject, $out = array () )
-    {
-        foreach ( (array) $xmlObject as $index => $node )
-            $out[$index] = ( is_object ( $node ) ) ? self::xml2array ( $node ) : $node;
-
-        return $out;
     }
 }
