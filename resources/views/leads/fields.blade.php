@@ -59,7 +59,8 @@
         <option value="UK">UK</option>
         <option value="Australia">Australia</option>
         <option value="Canada">Canada</option>
-        <option value="Canada">South Africa</option>
+        <option value="South Africa">South Africa</option>
+        <option value="India">India</option>
     </select>
 </div>
 <div class="form-group col-sm-6">

@@ -50,6 +50,8 @@ trait UtilTrait
             return "Africa/Johannesburg";
         } else if($country == "Canada"){
             return "America/Vancouver";
+        } else if($country == "India"){
+            return "Asia/Kolkata";
         } else {
             return "UTC";
         }
