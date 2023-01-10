@@ -70,6 +70,11 @@
 <script src="{{asset('js/app.js')}}"></script>
 <script src="{{asset('js/plugins.js')}}"></script>
 <script type="text/javascript">
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     $(function () {
         $('.datetimepicker').datetimepicker({ minDate: 0, format:'d/m/Y H:i'});
 

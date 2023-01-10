@@ -213,12 +213,10 @@ class LeadsController extends AppBaseController
             });
 
             $leads = $leads->when(request('filter'), function ($q){
-                \Log::info("in filter");
                 $q->where('status', '=', request('filter'));
             });
 
             $leads = $leads->when(request('niche_filter'), function ($q){
-                \Log::info(request('niche_filter'));
                 $q->where('category_id', '=', request('niche_filter'));
             });
 
