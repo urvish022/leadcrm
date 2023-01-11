@@ -157,12 +157,12 @@ class LeadsController extends AppBaseController
             ['data' => 'DT_RowIndex', 'name' => 'DT_RowIndex', 'title' => trans('Sr. No'), 'render' => null, 'orderable' => false, 'searchable' => false],
             ['data' => 'category', 'name' => 'category_name', 'title' => "Niche Category",'orderable' => false, 'searchable' => false],
             ['data' => 'company_name', 'name' => 'company_name', 'title' => "Company"],
-            ['data' => 'company_phone_number', 'name' => 'company_phone_number', 'title' => "Phone"],
             ['data' => 'company_details', 'name' => 'company_details', 'title' => "Details",'orderable' => false, 'searchable' => false],
             ['data' => 'company_origin', 'name' => 'company_origin', 'title' => "Country"],
             ['data' => 'total_employees', 'name' => 'total_employees', 'title' => "Employees"],
             ['data' => 'annual_revenue', 'name' => 'annual_revenue', 'title' => "Annual Revenue"],
             ['data' => 'reach_type', 'name' => 'reach_type', 'title' => "Reach"],
+            ['data' => 'schedule_emails_count', 'name' => 'schedule_emails_count', 'title' => "Schedule"],
             ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
         ];
@@ -203,9 +203,9 @@ class LeadsController extends AppBaseController
             $sort_field = $data['columns'][$sort_col]['data'];
 
             $leads = Leads::with(['lead_categories','lead_contacts'])
-            ->withCount('schedule_emails',function($q){
+            ->withCount(['schedule_emails'=>function($q){
                 $q->where('delivery_status','pending');
-            })
+            }])
             ->where('status','!=','invalid')
             ->where('created_by_id',auth()->id());
 
@@ -255,6 +255,9 @@ class LeadsController extends AppBaseController
                 if(!empty($leads->annual_revenue)){
                     return "$".number_format($leads->annual_revenue);
                 }
+            })
+            ->editColumn('schedule_emails_count',function($leads){
+                return $leads->schedule_emails_count > 0 ? "Yes" : "No";
             })
             ->addColumn('checkbox', function($leads) {
                 return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
@@ -500,6 +503,49 @@ class LeadsController extends AppBaseController
         }
     }
 
+    public function getDate($date,$interval_days)
+    {
+        $skip_days = ['Saturday','Sunday','Monday'];
+
+        \Log::info("date: ".$date);
+        \Log::info("-------------------");
+
+        $day = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('l');
+        if(in_array($day,$skip_days)){
+            while(!in_array($day,$skip_days)){
+                $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays(1)->format('d/m/Y H:i');
+                $day = Carbon::createFromFormat('d/m/Y H:i',$date)->format('l');
+            }
+        } else {
+            $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('d/m/Y H:i');
+        }
+        // \Log::info("day: ".$day);
+        // \Log::info("-------------------");
+
+        // while(!in_array($day,$skip_days)){
+
+        //     $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays(1)->format('d/m/Y H:i');
+        //     $day = Carbon::createFromFormat('d/m/Y H:i',$date)->format('l');
+        //     \Log::info("while loop");
+        //     \Log::info("day: ".$day);
+        //     \Log::info("day: ".$date);
+        //     \Log::info("-------------------");
+
+        //     if(!in_array($day,$skip_days)){
+        //         $date = Carbon::createFromFormat('d/m/Y H:i',$date)->format('d/m/Y H:i');
+        //         continue;
+        //     }
+        // }
+
+        \Log::info("-------------------");
+        \Log::info("outside loop");
+        \Log::info("date: ".$date);
+        \Log::info("day: ".$day);
+        \Log::info("-------------------");
+
+        return $date;
+    }
+
     public function save_schedule(Request $request)
     {
         try{
@@ -516,7 +562,7 @@ class LeadsController extends AppBaseController
                 for($i=0;$i<count($remaining_stages);$i++)
                 {
                     if($i != 0){
-                        $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('d/m/Y H:i');
+                        $date = $this->getDate($date,$interval_days);
                     }
 
                     $date = $this->convertToUTC($date, $lead->company_origin);
