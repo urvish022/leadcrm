@@ -43,6 +43,7 @@ class SendEmailQueueJob implements ShouldQueue
             $body = $emailData->body;
             $subject = $emailData->subject;
             $userId = $emailData->created_by_id;
+            $modelId = $emailData->id;
             $user_settings = UserSettings::find($userId);
             $email_signature = $user_settings->email_signature;
             $to_emails = explode(",",$emailData->emails);
@@ -55,12 +56,14 @@ class SendEmailQueueJob implements ShouldQueue
 
             $this->setMailConfig($userId);
 
-            $status = Mail::html($body,function($message) use($subject,$to_emails,$body,$user_settings){
+            $status = Mail::html($body,function($message) use($subject,$to_emails,$body,$user_settings,$modelId){
                 $message->to($to_emails)
                 ->subject($subject)
                 ->replyTo(Config::get('mail.from.address'))
                 ->bcc($user_settings->bcc_name)
                 ->from(Config::get('mail.from.address'),Config::get('mail.from.name'));
+
+                $message->getHeaders()->addTextHeader('X-Model-ID',$modelId);
             });
 
             EmailSchedules::where('id',$emailData->id)->update(['delivery_status'=>'success']);

@@ -11,15 +11,15 @@ use Illuminate\Notifications\Messages\SlackMessage;
 class UpworkSlackNotification extends Notification
 {
     use Queueable;
-    public $message,$description,$url;
+    public $title,$description,$url;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($message,$description,$url)
+    public function __construct($title,$description,$url)
     {
-        $this->message = $message;
+        $this->title = $title;
         $this->description = $description;
         $this->url = $url;
     }
@@ -43,20 +43,15 @@ class UpworkSlackNotification extends Notification
      */
     public function toSlack($notifiable)
     {
-        \Log::info("toSlack");
-
-        $message = $this->message;
-        $description = $this->description;
-        $url = $this->url;
-
-        \Log::info($message);
-        \Log::info($url);
+        $title = addslashes($this->title);
+        $description = addslashes(strip_tags($this->description));
+        $url = addslashes($this->url);
 
         return (new SlackMessage)
-            ->content($message)
-            ->attachment(function ($attachment) use ($url,$message,$description) {
-                $attachment->title($message, $url)
-                        ->content($description);
+            ->content($title)
+            ->attachment(function ($attachment) use ($url,$title,$description) {
+                $attachment->title($title, $url)
+                ->content($description);
             });
     }
 

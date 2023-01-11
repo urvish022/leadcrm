@@ -99,4 +99,9 @@ class Leads extends Model
     {
         return $this->hasMany(LeadsActivities::class,'lead_id','id');
     }
+
+    public function schedule_emails()
+    {
+        return $this->hasMany(EmailSchedules::class,'lead_id','id');
+    }
 }

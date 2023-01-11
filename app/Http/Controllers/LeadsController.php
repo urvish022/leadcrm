@@ -203,6 +203,9 @@ class LeadsController extends AppBaseController
             $sort_field = $data['columns'][$sort_col]['data'];
 
             $leads = Leads::with(['lead_categories','lead_contacts'])
+            ->withCount('schedule_emails',function($q){
+                $q->where('delivery_status','pending');
+            })
             ->where('status','!=','invalid')
             ->where('created_by_id',auth()->id());
 

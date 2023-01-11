@@ -75,8 +75,11 @@
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
+
     $(function () {
-        $('.datetimepicker').datetimepicker({ minDate: 0, format:'d/m/Y H:i'});
+        const date = new Date();
+        const nextDate = new Date(date.getTime() + 86400000);
+        $('.datetimepicker').datetimepicker({ minDate: nextDate, format:'d/m/Y H:i'});
 
         toastr.options = {
             "closeButton": true,
