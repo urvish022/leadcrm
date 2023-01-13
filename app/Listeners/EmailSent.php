@@ -29,11 +29,8 @@ class EmailSent
     {
         $tracker = $event->sent_email;
         $model_id = $event->sent_email->getHeader('X-Model-ID');
-        \Log::info("email sent listener");
-        \Log::info($tracker);
-        \Log::info($model_id);
 
-        EmailSchedules::where('id',$model_id)->update('tracking_id','');
+        EmailSchedules::where('id',$model_id)->update(['tracking_id'=>$tracker->hash]);
 
     }
 }

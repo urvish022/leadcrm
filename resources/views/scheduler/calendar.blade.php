@@ -215,6 +215,8 @@
                 type: "DELETE",
                 success: function(res) {
                     closeMailBoxPopup();
+                    const dates = getStartEndDate();
+                    getCalendarData(dates);
                     $('#calendar').fullCalendar('rerenderEvents');
                 }
             });

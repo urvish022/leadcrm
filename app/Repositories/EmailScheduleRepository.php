@@ -40,7 +40,7 @@ class EmailScheduleRepository extends BaseRepository
 
     public function getSchedulerData($start,$end)
     {
-        return EmailSchedules::with('leads')->whereBetween('schedule_time',[$start,$end])->get();
+        return EmailSchedules::with(['email_tracking','leads'])->whereBetween('schedule_time',[$start,$end])->get();
     }
 
     public function insert($data)
