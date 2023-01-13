@@ -31,6 +31,6 @@ class EmailSchedules extends Model
 
     public function email_tracking()
     {
-        return $this->hasMany(SentEmail::class,'tracking_id','hash');
+        return $this->hasOne(SentEmail::class,'tracking_id','hash');
     }
 }
