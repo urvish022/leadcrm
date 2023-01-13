@@ -507,41 +507,22 @@ class LeadsController extends AppBaseController
     {
         $skip_days = ['Saturday','Sunday','Monday'];
 
-        \Log::info("date: ".$date);
-        \Log::info("-------------------");
-
         $day = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('l');
+
         if(in_array($day,$skip_days)){
-            while(!in_array($day,$skip_days)){
+            $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('d/m/Y H:i');
+
+            for($i=0;$i<=6;$i++){
                 $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays(1)->format('d/m/Y H:i');
                 $day = Carbon::createFromFormat('d/m/Y H:i',$date)->format('l');
+
+                if(!in_array($day,$skip_days)){
+                    break;
+                }
             }
         } else {
             $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays($interval_days)->format('d/m/Y H:i');
         }
-        // \Log::info("day: ".$day);
-        // \Log::info("-------------------");
-
-        // while(!in_array($day,$skip_days)){
-
-        //     $date = Carbon::createFromFormat('d/m/Y H:i',$date)->addDays(1)->format('d/m/Y H:i');
-        //     $day = Carbon::createFromFormat('d/m/Y H:i',$date)->format('l');
-        //     \Log::info("while loop");
-        //     \Log::info("day: ".$day);
-        //     \Log::info("day: ".$date);
-        //     \Log::info("-------------------");
-
-        //     if(!in_array($day,$skip_days)){
-        //         $date = Carbon::createFromFormat('d/m/Y H:i',$date)->format('d/m/Y H:i');
-        //         continue;
-        //     }
-        // }
-
-        \Log::info("-------------------");
-        \Log::info("outside loop");
-        \Log::info("date: ".$date);
-        \Log::info("day: ".$day);
-        \Log::info("-------------------");
 
         return $date;
     }
@@ -565,7 +546,11 @@ class LeadsController extends AppBaseController
                         $date = $this->getDate($date,$interval_days);
                     }
 
-                    $date = $this->convertToUTC($date, $lead->company_origin);
+                    $timezoneAndDateData = $this->getTimezoneandDate($date, $lead->company_origin);
+
+                    $date = $timezoneAndDateData['date'];
+                    $timezone = $timezoneAndDateData['timezone'];
+
                     $emailData = $this->leadsEmailRepository->getEmailTemplate(['email_type'=>$remaining_stages[$i],'category_id'=>$lead['category_id']]);
                     if(!empty($emailData)){
                         $keywords = explode(",",$emailData['keywords']);
@@ -581,6 +566,7 @@ class LeadsController extends AppBaseController
                                 'lead_id'=>$lead->id,
                                 'created_by_id'=>auth()->id(),
                                 'emails'=>$emails,
+                                'timezone' => $timezone,
                                 'schedule_time' => $schedule_time,
                                 'subject'=>$subject,
                                 'body'=>$body,

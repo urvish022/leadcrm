@@ -33,7 +33,6 @@ class SendSchedulerEmails extends Command
     public function __construct()
     {
         parent::__construct();
-
     }
 
     /**
@@ -43,16 +42,24 @@ class SendSchedulerEmails extends Command
      */
     public function handle()
     {
-        $start = Carbon::now();
-        $end = Carbon::now()->addMinutes(2);
+        $all_timezones = ['America/New_York','Europe/London','Australia/Sydney','Africa/Johannesburg','America/Vancouver','Asia/Kolkata'];
+        foreach($all_timezones as $timezone){
+            date_default_timezone_set($timezone);
+            $start = Carbon::now();
+            $end = Carbon::now()->addMinutes(2);
 
-        $scheduleData = EmailSchedules::whereBetween('schedule_time',[$start,$end])->where('delivery_status','pending')->get();
-        foreach($scheduleData as $value){
+            $scheduleData = EmailSchedules::whereBetween('schedule_time',[$start,$end])
+            ->where('timezone',$timezone)
+            ->where('delivery_status','pending')
+            ->get();
 
-            $body = $value->body;
-            $to_emails = $value->emails;
+            foreach($scheduleData as $value){
 
-            return app(Dispatcher::class)->dispatch(new SendEmailQueueJob($value));
+                $body = $value->body;
+                $to_emails = $value->emails;
+
+                return app(Dispatcher::class)->dispatch(new SendEmailQueueJob($value));
+            }
         }
     }
 }

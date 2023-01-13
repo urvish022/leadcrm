@@ -5,6 +5,7 @@ namespace App\Listeners;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use jdavidbakr\MailTracker\Events\EmailSentEvent;
+use App\Models\EmailSchedules;
 
 class EmailSent
 {
@@ -31,5 +32,8 @@ class EmailSent
         \Log::info("email sent listener");
         \Log::info($tracker);
         \Log::info($model_id);
+
+        EmailSchedules::where('id',$model_id)->update('tracking_id','');
+
     }
 }

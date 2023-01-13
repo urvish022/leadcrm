@@ -22,6 +22,14 @@ trait UtilTrait
         return $first_string." ".$second_string;
     }
 
+    public function getTimezoneandDate($date,$country)
+    {
+        $timezone = $this->gettimezoneByCountry($country);
+        $date = Carbon::createFromFormat('d/m/Y H:i',$date)->format('d/m/Y H:i');
+
+        return compact('timezone','date');
+    }
+
     public function convertToUTC($date,$country)
     {
         $db_date = $date;

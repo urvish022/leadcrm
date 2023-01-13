@@ -16,7 +16,7 @@
     <button class="navbar-toggler sidebar-toggler d-lg-none mr-auto" type="button" data-toggle="sidebar-show">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="{{url('/')}}">
         <img class="navbar-brand-full" src="{{url('logo.png')}}" width="80" height="40"
              alt="Logo">
         <img class="navbar-brand-minimized" src="{{url('logo.png')}}" width="80" height="40" alt="Logo">
@@ -78,8 +78,8 @@
 
     $(function () {
         const date = new Date();
-        const nextDate = new Date(date.getTime() + 86400000);
-        $('.datetimepicker').datetimepicker({ minDate: nextDate, format:'d/m/Y H:i'});
+        // const nextDate = new Date(date.getTime() + 86400000);
+        $('.datetimepicker').datetimepicker({ minDate: 0, format:'d/m/Y H:i'});
 
         toastr.options = {
             "closeButton": true,

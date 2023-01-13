@@ -50,6 +50,8 @@ class EmailScheduleRepository extends BaseRepository
 
     public function delete($id)
     {
-        return EmailSchedules::find($id)->delete();
+        if(!is_null(EmailSchedules::find($id))){
+            return EmailSchedules::find($id)->delete();
+        }
     }
 }
