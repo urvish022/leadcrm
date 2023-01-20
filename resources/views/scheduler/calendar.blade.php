@@ -170,7 +170,7 @@
         function eventClicked(eventDetail) {
             var info = JSON.parse(eventDetail['extra_information']);
 
-            const emails = info['emails'];_
+            const emails = info['emails'];
             const subject = info['subject'];
             const body = info['body'];
             const id = info['id'];
