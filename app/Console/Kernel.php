@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('warmup:email')->everySixHours();
+        $schedule->command('warmup:email')->everySixHours();
         $schedule->command('run:scheduler_emails')->everyMinute();
         $schedule->job(new UpworkFeedJob)->everyFiveMinutes();
     }
