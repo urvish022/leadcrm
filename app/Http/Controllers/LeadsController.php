@@ -368,6 +368,7 @@ class LeadsController extends AppBaseController
      */
     public function edit($id)
     {
+        $categories = $this->leadCategoryRepository->getCountWithLeads();
         $leads = $this->leadsRepository->find($id);
 
         if (empty($leads)) {
@@ -376,7 +377,7 @@ class LeadsController extends AppBaseController
             return redirect(route('leads.index'));
         }
 
-        return view('leads.edit')->with('leads', $leads);
+        return view('leads.edit')->with(compact('leads', 'categories'));
     }
 
     /**

@@ -55,10 +55,7 @@ class SendSchedulerEmails extends Command
 
             foreach($scheduleData as $value){
 
-                $body = $value->body;
-                $to_emails = $value->emails;
-
-                return app(Dispatcher::class)->dispatch(new SendEmailQueueJob($value));
+                app(Dispatcher::class)->dispatch(new SendEmailQueueJob($value));
             }
         }
     }

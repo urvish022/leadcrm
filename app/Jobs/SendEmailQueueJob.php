@@ -40,6 +40,7 @@ class SendEmailQueueJob implements ShouldQueue
     {
         $emailData = $this->emailData;
         try{
+
             $body = $emailData->body;
             $subject = $emailData->subject;
             $userId = $emailData->created_by_id;
@@ -51,7 +52,7 @@ class SendEmailQueueJob implements ShouldQueue
             $body = View::make('email_template.index')->with(compact('body','email_signature'));
 
             if(env('APP_ENV') == 'local'){
-                $to_emails = ['info@techwebsoft.com','urvish31797@gmail.com'];
+                $to_emails = ['info@techwebsoft.com'];
             }
 
             $this->setMailConfig($userId);

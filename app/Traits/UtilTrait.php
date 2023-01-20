@@ -86,6 +86,15 @@ trait UtilTrait
                         'password'=>$user_setting['mail_password']
                     ];
 
+                    // Config::set(['stream' => [
+                    //         'ssl' => [
+                    //             'allow_self_signed' => true,
+                    //             'verify_peer' => false,
+                    //             'verify_peer_name' => false,
+                    //         ],
+                    //     ]
+                    // ]);
+
                     Config::set(['mail.mailers.smtp' => $smtpMailConfig]);
 
                     $fromConfig = [
