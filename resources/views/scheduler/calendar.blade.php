@@ -181,7 +181,6 @@
             const hour = datetime.getHours();
             const minute = datetime.getMinutes();
             const second = datetime.getSeconds();
-
             datetime = datetime.toLocaleDateString("en-GB", {
                 year: "numeric",
                 month: "2-digit",
