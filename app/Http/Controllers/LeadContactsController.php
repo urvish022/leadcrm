@@ -178,7 +178,7 @@ class LeadContactsController extends AppBaseController
         $leadContacts = $this->leadContactsRepository->find($id);
 
         if (empty($leadContacts)) {
-            Flash::error('Contacts not found');
+            Flash::error('Contact not found');
 
             return redirect(route('lead-contacts.index'));
         }
