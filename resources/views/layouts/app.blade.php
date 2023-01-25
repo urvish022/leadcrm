@@ -70,6 +70,7 @@
 <script src="{{asset('js/app.js')}}"></script>
 <script src="{{asset('js/plugins.js')}}"></script>
 <script type="text/javascript">
+    const base_url = '{!! url() !!}';
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

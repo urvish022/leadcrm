@@ -50,6 +50,15 @@
                         Data Copied Successfully
                     </div>
                     <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Opens: </label>
+                        <span id="opens"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">Click: </label>
+                        <span id="clicks"></span>
+                        <a href="" target="_blank" id="report-url">View Report</a>
+                    </div>
+                    <div class="form-group">
                         <label for="recipient-name" class="col-form-label">Time: </label>
                         <span id="time"></span>
                     </div>
@@ -175,7 +184,11 @@
             const body = info['body'];
             const id = info['id'];
             const time = info['schedule_time'];
-
+            const email_tracking = info['email_tracking'];
+            const opens = email_tracking != null ? email_tracking.opens : 0;
+            const clicks = email_tracking != null ? email_tracking.clicks : 0;
+            const report_id = email_tracking != null ? email_tracking.id : "#";
+            const view_track_url = base_url + "email-manager/url-detail/" + report_id;
             var datetime = new Date(time);
 
             const hour = datetime.getHours();
@@ -186,13 +199,16 @@
                 month: "2-digit",
                 day: "2-digit",
             });
-
+            
             const formatted_date = datetime +" "+ hour +":"+ minute +":"+ second;
-
+            
             $("#schedule_id").val(id);
             $("#subject").val(subject);
             $("#emails").val(emails);
+            $("#opens").val(opens);
+            $("#clicks").val(clicks);
             $("#time").html(formatted_date);
+            $("#report-url").attr("href",view_track_url);
             tinyMCE.activeEditor.setContent(body);
 
             $('#myModal').modal('toggle');

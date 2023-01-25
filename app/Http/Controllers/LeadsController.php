@@ -257,7 +257,7 @@ class LeadsController extends AppBaseController
                 }
             })
             ->editColumn('schedule_emails_count',function($leads){
-                return $leads->schedule_emails_count > 0 ? "Yes" : "No";
+                return isset($leads->schedule_emails_count) && $leads->schedule_emails_count > 0 ? "Yes" : "No";
             })
             ->addColumn('checkbox', function($leads) {
                 return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
