@@ -56,6 +56,7 @@
                     <div class="form-group">
                         <label for="recipient-name" class="col-form-label">Click: </label>
                         <span id="clicks"></span>
+                        <br>
                         <a href="" target="_blank" id="report-url">View Report</a>
                     </div>
                     <div class="form-group">
