@@ -196,6 +196,8 @@ class LeadContactsController extends AppBaseController
     public function edit($id)
     {
         $leadContacts = $this->leadContactsRepository->find($id);
+        $categories = $this->leadCategoryRepository->getCountWithLeads();
+
 
         if (empty($leadContacts)) {
             Flash::error('Contacts not found');
@@ -203,7 +205,7 @@ class LeadContactsController extends AppBaseController
             return redirect(route('lead-contacts.index'));
         }
 
-        return view('lead_contacts.edit')->with('leadContacts', $leadContacts);
+        return view('lead_contacts.edit')->with(compact('leadContacts','categories'));
     }
 
     /**
