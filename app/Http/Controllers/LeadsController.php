@@ -162,7 +162,7 @@ class LeadsController extends AppBaseController
             ['data' => 'total_employees', 'name' => 'total_employees', 'title' => "Employees"],
             ['data' => 'annual_revenue', 'name' => 'annual_revenue', 'title' => "Annual Revenue"],
             ['data' => 'reach_type', 'name' => 'reach_type', 'title' => "Reach"],
-            ['data' => 'schedule_emails_count', 'name' => 'schedule_emails_count', 'title' => "Schedule"],
+            ['data' => 'schedule_emails', 'name' => 'schedule_emails', 'title' => "Schedule", 'searchable'=>false, 'orderable'=>false],
             ['data' => 'status', 'name' => 'status', 'title' => "Status"],
             ['data' => 'action', 'name' => 'action', 'title' => trans('Action'), 'orderable' => false, 'searchable' => false],
         ];
@@ -203,27 +203,24 @@ class LeadsController extends AppBaseController
             $sort_field = $data['columns'][$sort_col]['data'];
 
             $leads = Leads::with(['lead_categories','lead_contacts'])
-            ->withCount(['schedule_emails'=>function($q){
-                $q->where('delivery_status','pending');
-            }])
             ->where('status','!=','invalid')
             ->where('created_by_id',auth()->id());
 
-            $leads = $leads->when(request('search')['value'], function ($q){
+            $leads->when(request('search')['value'], function ($q){
                 return $q->where('company_name', 'LIKE', '%' . request('search')['value'] . '%')
                     ->orWhere('company_website', 'LIKE', '%' . request('search')['value'] . '%')
                     ->orWhere('company_origin', 'LIKE', '%' . request('search')['value'] . '%');
             });
 
-            $leads = $leads->when(request('filter'), function ($q){
+            $leads->when(request('filter'), function ($q){
                 $q->where('status', '=', request('filter'));
             });
 
-            $leads = $leads->when(request('niche_filter'), function ($q){
+            $leads->when(request('niche_filter'), function ($q){
                 $q->where('category_id', '=', request('niche_filter'));
             });
 
-            $leads = $leads->when(empty(request('order')[0]['column']), function($q){
+            $leads->when(empty(request('order')[0]['column']), function($q){
                 return $q->orderBy('id','DESC');
             });
 
@@ -256,8 +253,8 @@ class LeadsController extends AppBaseController
                     return "$".number_format($leads->annual_revenue);
                 }
             })
-            ->editColumn('schedule_emails_count',function($leads){
-                return isset($leads->schedule_emails_count) && $leads->schedule_emails_count > 0 ? "Yes" : "No";
+            ->editColumn('schedule_emails',function($leads){
+                return $leads->schedule_emails->count() > 0 ? "Yes" : "No";
             })
             ->addColumn('checkbox', function($leads) {
                 return "<input type='checkbox' onclick='checkboxselect()' class='lead-checkboxes' id='lead_checkbox-$leads->id'>";
