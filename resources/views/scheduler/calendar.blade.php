@@ -188,7 +188,7 @@
             const opens = email_tracking != null ? email_tracking.opens : 0;
             const clicks = email_tracking != null ? email_tracking.clicks : 0;
             const report_id = email_tracking != null ? email_tracking.id : "#";
-            const view_track_url = base_url + "email-manager/url-detail/" + report_id;
+            const view_track_url = base_url + "/email-manager/url-detail/" + report_id;
             var datetime = new Date(time);
 
             const hour = datetime.getHours();
@@ -205,8 +205,8 @@
             $("#schedule_id").val(id);
             $("#subject").val(subject);
             $("#emails").val(emails);
-            $("#opens").val(opens);
-            $("#clicks").val(clicks);
+            $("#opens").html(opens);
+            $("#clicks").html(clicks);
             $("#time").html(formatted_date);
             $("#report-url").attr("href",view_track_url);
             tinyMCE.activeEditor.setContent(body);
