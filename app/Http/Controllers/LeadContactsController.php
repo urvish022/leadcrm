@@ -143,6 +143,7 @@ class LeadContactsController extends AppBaseController
      */
     public function create()
     {
+        
         $categories = $this->leadCategoryRepository->getCountWithLeads();
 
         return view('lead_contacts.create',compact('categories'));

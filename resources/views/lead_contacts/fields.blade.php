@@ -1,4 +1,3 @@
-@if(is_null($leadContacts))
 <div class="form-group col-sm-6">
     {!! Form::label('categories', 'Categories:') !!}
     <select class="form-control" name="category_id" onchange="categoryChange(this.value)" style="width: 100%">
@@ -14,7 +13,6 @@
         <option value="">Select</option>
     </select>
 </div>
-@endif
 <div class="form-group col-sm-6">
     {!! Form::label('first_name', 'First Name:') !!}
     {!! Form::text('first_name', null, ['class' => 'form-control']) !!}
